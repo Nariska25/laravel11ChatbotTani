@@ -15,7 +15,7 @@
 
         <!-- Icon Font Stylesheet -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+        {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet"> --}}
 
         <!-- Libraries Stylesheet -->
         <link href="{{ asset('assets/lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
@@ -31,7 +31,7 @@
 
         <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
         <link href="{{ asset('assets/css/chat.css') }}" rel="stylesheet">
-
+        <link href="{{ asset('assets/css/home.css') }}" rel="stylesheet">
     </head>
 
     <body>

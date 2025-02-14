@@ -8,7 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController; // Tambahkan Controller Cart jika ada
-
+use App\Http\Controllers\RecommendedProductController;
+use App\Http\Controllers\HeroSectionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -91,11 +92,23 @@ Route::delete('/cart/{id}', [CartController::class, 'delete'])->name('cart.delet
 
 
 
-
+Route::resource('recommended-products', RecommendedProductController::class);
 
 use App\Http\Controllers\ChatbotController;
 
 // Route::post('/chat', [ChatbotController::class, 'chat']);
+
+
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::resource('hero', HeroSectionController::class);
+});
+
+Route::get('/', function () {
+    $heroSections = \App\Models\HeroSection::all();
+    return view('home', compact('heroSections'));
+});
+Route::delete('/admin/hero/{id}', [HeroSectionController::class, 'destroy'])->name('admin.hero.destroy');
+Route::post('/admin/hero/store', [HeroSectionController::class, 'store'])->name('admin.hero.store');
 
 
 

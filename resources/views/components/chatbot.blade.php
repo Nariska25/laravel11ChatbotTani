@@ -1,7 +1,6 @@
-<section>
 
 
-    <div class="container py-5 position-fixed bottom-0 end-0 m-3" style="z-index: 99" id="chat2">
+    <div class="d-none container py-5 position-fixed bottom-0 end-0 mx-3 my-5" style="z-index: 99" id="chat2">
   
       <div class="row d-flex justify-content-end">
         <div class="col-md-10 col-lg-8 col-xl-6">
@@ -126,8 +125,8 @@
   
     </div>
 
-    <button id="chatIcon" style="z-index: 99" class="btn btn-primary position-fixed bottom-0 end-0 m-3">
-        <i class="fas fa-comment"></i>
+    <button id="chatIcon" style="z-index: 99" class="btn btn-primary position-fixed bottom-0 end-0 m-3 p-3">
+        <i class="fas fa-comment fa-2x"></i>
     </button>
     <script>
         document.getElementById("chatIcon").addEventListener("click", function() {
@@ -137,4 +136,3 @@
             document.getElementById("chat2").classList.add("d-none");
         });
     </script>
-  </section>
