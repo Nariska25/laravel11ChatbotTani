@@ -54,14 +54,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cart::class, 'user_id');
     }
-
-    // Event untuk hashing password sebelum menyimpan
-    protected static function booted()
-    {
-        static::saving(function ($user) {
-            if ($user->isDirty('password')) {
-                $user->password = bcrypt($user->password);
-            }
-        });
-    }
 }

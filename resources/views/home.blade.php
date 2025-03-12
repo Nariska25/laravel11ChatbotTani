@@ -23,11 +23,11 @@
     </div>
     <!-- Modal Search End -->
 
-<!-- Hero section -->  
+<!-- Hero section -->
     <section id="hero" class="hero section dark-background">
 
       <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
-  
+
         <div class="carousel-item active">
           <img src="{{ asset('assets/img/hero-1.jpg') }}" alt="">
           <div class="carousel-container">
@@ -35,7 +35,7 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </div>
         </div><!-- End Carousel Item -->
-  
+
         <div class="carousel-item">
           <img src="{{ asset('assets/img/hero-2.jpg') }}" alt="">
           <div class="carousel-container">
@@ -43,7 +43,7 @@
             <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.</p>
           </div>
         </div><!-- End Carousel Item -->
-  
+
         <div class="carousel-item">
           <img src="assets/img/hero-3.jpg" alt="">
           <div class="carousel-container">
@@ -51,7 +51,7 @@
             <p>Beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
           </div>
         </div><!-- End Carousel Item -->
-  
+
         <div class="carousel-item">
           <img src="assets/img/hero-4.jpg" alt="">
           <div class="carousel-container">
@@ -59,7 +59,7 @@
             <p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius.</p>
           </div>
         </div><!-- End Carousel Item -->
-  
+
         <div class="carousel-item">
           <img src="assets/img/hero-5.jpg" alt="">
           <div class="carousel-container">
@@ -67,15 +67,15 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
           </div>
         </div><!-- End Carousel Item -->
-  
+
         <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
           <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
         </a>
-  
+
         <a class="carousel-control-next" href="#hero-carousel" role="button" data-bs-slide="next">
           <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
         </a>
-  
+
         <ol class="carousel-indicators">
           <li data-bs-target="#hero-carousel" data-bs-slide-to="0" class="active"></li>
           <li data-bs-target="#hero-carousel" data-bs-slide-to="1"></li>
@@ -83,11 +83,11 @@
           <li data-bs-target="#hero-carousel" data-bs-slide-to="3"></li>
           <li data-bs-target="#hero-carousel" data-bs-slide-to="4"></li>
         </ol>
-  
+
       </div>
-  
+
     </section>
-<!-- Hero section -->  
+<!-- Hero section -->
 
 
 
@@ -349,6 +349,7 @@
     <div class="container-fluid vesitable py-5">
         <div class="container py-5">
             <h1 class="mb-0">Rekomendasi Produk</h1>
+
             <div class="owl-carousel vegetable-carousel justify-content-center">
                 <div class="border border-success rounded position-relative vesitable-item">
                     <div class="vesitable-img">
@@ -364,7 +365,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="border border-success rounded position-relative vesitable-item">
+                {{-- <div class="border border-success rounded position-relative vesitable-item">
                     <div class="vesitable-img">
                         <img src="{{ asset('assets/img/tomat.jpeg') }}" class="img-fluid w-100 rounded-top" alt="">
                     </div>
@@ -433,11 +434,11 @@
                             <a href="#" class="btn border border-secondary rounded-pill px-3 text-success"><i class="fa fa-shopping-bag me-2 text-success"></i> Add to cart</a>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
-    
+
     <!-- Vesitable Shop End -->
 
 
