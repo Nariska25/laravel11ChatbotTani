@@ -1,86 +1,126 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Product')
+@section('title', 'Detail Produk')
 
 @section('content')
-    <!-- Modal Search Start -->
-    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content rounded-0">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Search by keyword</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div class="container py-5" style="margin-top: 80px;">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 text-center">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <img src="{{ asset('storage/' . $product->products_image) }}" 
+                         alt="{{ $product->products_name }}" 
+                         class="img-fluid rounded" 
+                         style="max-height: 500px; object-fit: contain;">
                 </div>
-                <div class="modal-body d-flex justify-content-center">
-                    <div class="input-group w-75">
-                        <input type="search" class="form-control p-3" placeholder="keywords" aria-describedby="search-icon-1">
-                        <span id="search-icon-1" class="input-group-text"><i class="fa fa-search"></i></span>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h1 class="fw-bold mb-3">{{ $product->products_name }}</h1>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-primary me-2">{{ $product->category->category_name }}</span>
+                        <span class="badge bg-{{ $product->stock > 0 ? 'success' : 'danger' }}">
+                            {{ $product->stock > 0 ? 'Stok Tersedia' : 'Stok Habis' }}
+                        </span>
                     </div>
+                    
+                    <h2 class="text-primary fw-bold mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</h2>
+                    
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Deskripsi Produk:</h5>
+                        <p class="mb-0">{{ $product->products_description }}</p>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Quantity Selector -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Jumlah:</label>
+                        <div class="input-group" style="width: 150px;">
+                            <button type="button" class="btn btn-outline-secondary btn-minus">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" name="amount" value="1" min="1" max="{{ $product->stock }}" 
+                            class="form-control text-center quantity-input" id="quantityInput">
+
+                            <button type="button" class="btn btn-outline-secondary btn-plus">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">Stok tersedia: {{ $product->stock }}</small>
+                    </div>     
+                    <!-- Add to Cart Button -->
+                    <form action="{{ route('cart.store') }}" method="POST" id="addToCartForm">
+                        @csrf
+                        <input type="hidden" name="products_id" value="{{ $product->products_id }}">
+                        <input type="hidden" name="products_name" value="{{ $product->products_name }}">
+                        <input type="hidden" name="price" value="{{ $product->price }}">
+                        <input type="hidden" name="amount" id="addToCartQuantity" value="1">
+                        <input type="hidden" name="discount" value="0">
+                        <button type="submit" class="btn btn-outline-primary btn-lg py-3" {{ $product->stock == 0 ? 'disabled' : '' }}>
+                            <i class="fas fa-cart-plus me-2"></i> Tambah ke Keranjang
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal Search End -->
+</div>
 
-    <!-- Page Header Start -->
-    <div class="container-fluid page-header py-5">
-        <h1 class="text-center text-white display-6">Detail Produk</h1>
-    </div>
-    <!-- Page Header End -->
+<script>
+    document.querySelector('.btn-plus').addEventListener('click', function() {
+        let quantityInput = document.getElementById('quantityInput');
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue < {{ $product->stock }}) {
+            quantityInput.value = currentValue + 1;
+            document.getElementById('addToCartQuantity').value = currentValue + 1;
+        }
+    });
 
-                    <!-- Kolom Detail Produk -->
-                    <div class="col-lg-12">
-                        <div class="card shadow-sm border-0">
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <!-- Gambar Produk -->
-                                    <div class="col-lg-6 text-center mb-3 mb-lg-0">
-                                        @if($product->gambar_produk)
-                                            <img src="{{ asset('storage/' . $product->gambar_produk) }}" 
-                                                 alt="{{ $product->nama_produk }}" 
-                                                 class="img-fluid rounded mb-3" 
-                                                 style="max-height: 400px; object-fit: cover;">
-                                        @else
-                                            <p>No image available</p>
-                                        @endif
-                                    </div>
-
-                                    <!-- Informasi Produk -->
-                                    <div class="col-lg-6">
-                                        <h4 class="fw-bold mb-3">{{ $product->nama_produk }}</h4>
-                                        <p><strong>Category:</strong> {{ $product->kategori->nama_kategori }}</p>
-                                        <h5 class="fw-bold text-success mb-3">Rp {{ number_format($product->harga, 0, '.', '.') }}</h5>
-                                        <p><strong>Stok:</strong> {{ $product->stok }}</p>
-                                        <p class="mb-4">{{ $product->deskripsi_produk }}</p>
-
-                                      <!-- Form Tambah ke Keranjang -->
-                        <form action="{{ route('cart.store') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="produk_id" value="{{ $product->produk_id }}">
-                            
-                                <!-- Input jumlah produk -->
-                                <div class="input-group quantity mb-4" style="width: 150px;">
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-sm btn-minus rounded-circle bg-light border" onclick="decreaseQuantity()">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="number" name="jumlah" value="1" min="1" class="form-control" id="quantityInput">
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-sm btn-plus rounded-circle bg-light border" onclick="increaseQuantity()">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- Tombol Add to Cart -->
-                                <button type="submit" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary">
-                                    <i class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart
-                                </button>
-                            </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
+    document.querySelector('.btn-minus').addEventListener('click', function() {
+        let quantityInput = document.getElementById('quantityInput');
+        let currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+            document.getElementById('addToCartQuantity').value = currentValue - 1;
+        }
+    });
+</script>     
 @endsection
+
+@push('styles')
+<style>
+    .quantity-input {
+        height: 50px;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    .btn-plus, .btn-minus {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-lg {
+        border-radius: 8px;
+    }
+    
+    .card {
+        border-radius: 12px;
+    }
+    
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
+@endpush

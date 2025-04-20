@@ -5,9 +5,9 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('admin.dashboard') }}">
             <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
+                <i class="fas fa-seedling"></i>
             </div>
             <div class="sidebar-brand-text mx-3">Sahabat Tani</div>
         </a>
@@ -16,98 +16,117 @@
         <hr class="sidebar-divider my-0">
 
         <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
+        <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('admin.dashboard') }}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span></a>
+                <span>Dashboard</span>
+            </a>
         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
 
         <!-- Heading -->
-        <div class="sidebar-heading">
-            Interface
-        </div>
+        <div class="sidebar-heading">Manajemen Produk</div>
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
+        <!-- Produk -->
+        <li class="nav-item {{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.products.index') }}">
+                <i class="fas fa-box-open"></i>
                 <span>Produk</span>
             </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Produk:</h6>
-                    <a class="collapse-item" href="{{ route('admin.products.index') }}">Data Produk</a>
-                    <a class="collapse-item" href="{{ route('admin.hero.index') }}">Hero</a>
-                </div>
-            </div>
         </li>
+
+        <!-- Kategori -->
+        <li class="nav-item {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.categories.index') }}">
+                <i class="fas fa-tags"></i>
+                <span>Kategori</span>
+            </a>
+        </li>
+
+        <!-- Sale Section -->
+        <li class="nav-item {{ request()->routeIs('admin.sales.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.sales.index') }}">
+                <i class="fas fa-percent"></i>
+                <span>Sale</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">Manajemen Order</div>
+
+        <!-- Order Section -->
+        <li class="nav-item {{ request()->routeIs('admin.order.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.order.index') }}">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Order</span>
+            </a>
+        </li>
+
+        <!-- Voucher Section -->
+        <li class="nav-item {{ request()->routeIs('admin.voucher.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.voucher.index') }}">
+                <i class="fas fa-ticket-alt"></i>
+                <span>Voucher</span>
+            </a>
+        </li>
+
+        <!-- Pengiriman Section -->
+        <li class="nav-item {{ request()->routeIs('admin.shipping.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.shipping.index') }}">
+                <i class="fas fa-truck"></i>
+                <span>Pengiriman</span>
+            </a>
+        </li>
+
     </ul>
     <!-- End of Sidebar -->
-<!-- Content Wrapper -->
-<div id="content-wrapper" class="d-flex flex-column">
 
-    <!-- Main Content -->
-    <div id="content">
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
 
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <!-- Main Content -->
+        <div id="content">
 
-            <!-- Sidebar Toggle (Topbar) -->
-            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                <i class="fa fa-bars"></i>
-            </button>
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-            <!-- Topbar Navbar -->
-            <ul class="navbar-nav ml-auto">
+                <!-- Sidebar Toggle -->
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
 
-                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                <li class="nav-item dropdown no-arrow d-sm-none">
-                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-search fa-fw"></i>
-                    </a>
-                    <!-- Dropdown - Messages -->
-                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                        aria-labelledby="searchDropdown">
-                        <form class="form-inline mr-auto w-100 navbar-search">
-                            <div class="input-group">
-                                <input type="text" class="form-control bg-light border-0 small"
-                                    placeholder="Search for..." aria-label="Search"
-                                    aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
+
+                    <!-- User Information -->
+                    @if(Auth::check())
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                                <img class="img-profile rounded-circle"
+                                    src="{{ Auth::user()->profile_image ? asset('storage/' . Auth::user()->profile_image) : asset('img/default-profile.png') }}">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="{{ route('admin.profile') }}">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profil Saya
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
                             </div>
-                        </form>
-                    </div>
-                </li>
+                        </li>
+                    @endif
+                </ul>
 
-                <!-- Nav Item - User Information -->
-                <li class="nav-item dropdown no-arrow">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-                        <img class="img-profile rounded-circle"
-                            src="img/undraw_profile.svg">
-                    </a>
-                    <!-- Dropdown - User Information -->
-                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                        aria-labelledby="userDropdown">
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                            Logout
-                        </a>
-                    </div>
-                </li>
-
-            </ul>
-
-        </nav>
-        <!-- End of Topbar -->
+            </nav>
+            <!-- End of Topbar -->

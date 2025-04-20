@@ -1,0 +1,36 @@
+@extends('admin.layouts.app')
+
+@section('content')
+<div class="container">
+    <h2>Edit Sale</h2>
+    <form action="{{ route('admin.sales.update', $sale->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-3">
+            <label for="discount_type" class="form-label">Tipe Diskon</label>
+            <select name="discount_type" id="discount_type" class="form-control">
+                <option value="percentage" {{ $sale->discount_type == 'percentage' ? 'selected' : '' }}>Persentase</option>
+                <option value="fixed" {{ $sale->discount_type == 'fixed' ? 'selected' : '' }}>Tetap (Rp)</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="discount_value" class="form-label">Nilai Diskon</label>
+            <input type="text" name="discount_value" id="discount_value" class="form-control" value="{{ $sale->discount_value }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="start_date" class="form-label">Tanggal Mulai</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ $sale->start_date }}">
+        </div>
+
+        <div class="mb-3">
+            <label for="end_date" class="form-label">Tanggal Selesai</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ $sale->end_date }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+    </form>
+</div>
+@endsection

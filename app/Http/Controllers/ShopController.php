@@ -8,18 +8,22 @@ use Illuminate\Http\Request;
 class ShopController extends Controller
 {
     public function index(Request $request)
-    {
-        // Ambil semua kategori
-        $categories = Categories::all();
+{
+    $query = Products::query();
 
-        // Filter produk berdasarkan kategori yang dipilih
-        if ($request->has('kategori') && $request->kategori != 'all') {
-            $products = Products::where('kategori_id', $request->kategori)->get();  // Menyaring berdasarkan kategori_id
-        } else {
-            $products = Products::all();  // Menampilkan semua produk jika kategori 'All' dipilih
-        }
-
-        // Kirim data kategori dan produk ke view
-        return view('shop', compact('categories', 'products'));
+    // Filter by category
+    if ($request->has('kategori') && $request->kategori != 'all') {
+        $query->where('category_id', $request->kategori);
     }
+
+    // Search by keyword
+    if ($request->has('search')) {
+        $query->where('products_name', 'like', '%' . $request->search . '%');
+    }
+
+    $products = $query->paginate(12);
+    $categories = Categories::all();
+
+    return view('shop', compact('products', 'categories'));
+}
 }

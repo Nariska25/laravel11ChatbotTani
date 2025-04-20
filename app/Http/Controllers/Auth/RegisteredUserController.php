@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -27,23 +28,30 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    // App/Http/Controllers/Auth/RegisteredUserController.php
+
+    public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'phone' => 'required|string|min:10',
+            'password' => 'required|string|min:6'
         ]);
-
-        $user = User::create([
+    
+        // Simpan user ke database
+        User::create([
             'name' => $request->name,
-            'email' => strtolower($request->email), // Mengonversi email ke huruf kecil
-            'password' => Hash::make($request->password),
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'password' => bcrypt($request->password),
+            'role' => 'user',
+            'status' => 'active'
         ]);
+    
+        // Tanpa login langsung, arahkan ke login page
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil, silakan login.');
+    }    
 
-        event(new Registered($user));
-
-        // Mengarahkan ke halaman login setelah registrasi berhasil
-        return redirect()->route('login')->with('status', 'Registrasi berhasil, silakan login.');
-    }
 }
