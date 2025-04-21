@@ -34,23 +34,11 @@ return [
         ],
     ],
 
-    // 'rajaongkir' => [
-    //     'url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
-    //     'key' => env('RAJAONGKIR_API_KEY', 'Oh3ibrwQ857baf6b99d0b7a4sg9G9sUC'),
-    //     'origin' => env('RAJAONGKIR_ORIGIN'), // Your store's city ID
-    // ],
-
-  'rajaongkir' => [
-    'api_key' => env('RAJAONGKIR_API_KEY'),
-    'base_url' => env('RAJAONGKIR_BASE_URL'),
-    'origin' => env('RAJAONGKIR_ORIGIN', 501), // Default: Yogya
-  ],
-
 'xendit' => [
     'secret_key' => env('XENDIT_SECRET_KEY'),
 ],
 
-'xendit' => [
-    'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
-],
+// 'xendit' => [
+//     'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
+// ],
 ];

@@ -129,7 +129,7 @@ class CartController extends Controller
             }
         }
 
-        dd("Semua cek lolos! Redirect ke checkout.");
+        dd("Semua cek lolos! Redirect ke checkout."); 
         return redirect()->route('checkout.index');
     }
 
