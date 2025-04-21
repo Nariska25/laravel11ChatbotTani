@@ -36,9 +36,7 @@ return [
 
 'xendit' => [
     'secret_key' => env('XENDIT_SECRET_KEY'),
-],
-
-// 'xendit' => [
-//     'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
-// ],
+    'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
+    ],
 ];
+

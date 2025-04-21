@@ -23,7 +23,8 @@ class Order extends Model
         'shipping_address',
         'payment_status',
         'xendit_invoice_id',
-        'xendit_payment_url'
+        'xendit_payment_url',
+        'external_id', // Menambahkan kolom external_id
     ];
 
     public function user()

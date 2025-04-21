@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
@@ -9,7 +10,6 @@ use Xendit\Invoice\CreateInvoiceRequest;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 
 class OrdersController extends Controller
 {
@@ -51,72 +51,44 @@ class OrdersController extends Controller
 
     public function pay($id): RedirectResponse
     {
-        Log::info("Masuk ke method pay() untuk order ID: $id");
-    
+        // Ambil order
         $order = Order::where('user_id', Auth::id())
             ->where('order_id', $id)
             ->firstOrFail();
     
-        Log::info("Order ditemukan: " . json_encode($order));
-    
         if ($order->order_status !== 'Belum Bayar') {
-            Log::warning("Order status bukan 'Belum Bayar'. Status saat ini: " . $order->order_status);
             return redirect()->back()->with('error', 'Order sudah diproses atau dibatalkan.');
         }
     
-        try {
-            // Ambil API key dari config
-            $xenditKey = config('services.xendit.secret_key');
-            Log::info("Xendit API Key: " . ($xenditKey ? '[TERSEDIA]' : '[TIDAK ADA]'));
-
-            if (empty($xenditKey)) {
-                Log::error("API Key Xendit kosong. Cek .env dan jalankan config:clear");
-                return redirect()->back()->with('error', 'API Key Xendit belum diatur.');
-            }
-
+        // Setup konfigurasi
+        $config = Configuration::getDefaultConfiguration()
+            ->setApiKey(config('services.xendit.secret_key'));
     
-            // Setup konfigurasi Xendit
-            $config = Configuration::getDefaultConfiguration()->setApiKey($xenditKey);
-            Log::info("Konfigurasi Xendit berhasil di-setup.");
+        // Buat InvoiceApi instance
+        $apiInstance = new InvoiceApi(new Client(), $config);
     
-            $apiInstance = new InvoiceApi(new Client(), $config);
-    
-            if (empty($order->xendit_payment_url)) {
+        if (empty($order->xendit_payment_url)) {
+            try {
                 $createInvoiceRequest = new CreateInvoiceRequest([
-                    'external_id' => 'order-' . $order->id,
-                    'payer_email' => $order->user->email,
-                    'description' => 'Payment for Order #' . $order->id,
-                    'amount' => (int) $order->total_payment,
-                    'success_redirect_url' => route('orders.show', $order->order_id),
-                    'callback_url' => 'https://bb46-110-139-192-224.ngrok-free.app/xendit/webhook',
-                ]);
-    
-                // Debug isi request
-                Log::info("Request invoice (CreateInvoiceRequest):", [
-                    'external_id' => 'order-' . $order->id,
+                    'external_id' => 'invoice_' . $order->id,  // Pastikan formatnya konsisten
                     'payer_email' => $order->user->email,
                     'description' => 'Payment for Order #' . $order->id,
                     'amount' => $order->total_payment,
                     'success_redirect_url' => route('orders.show', $order->order_id),
-                    'callback_url' => 'https://bb46-110-139-192-224.ngrok-free.app/xendit/webhook',
+                    'callback_url' => 'https://a19f-103-153-149-59.ngrok-free.app/xendit/webhook', // <== ini penting!
                 ]);
+                
     
                 $result = $apiInstance->createInvoice($createInvoiceRequest);
-    
-                Log::info("Invoice berhasil dibuat: " . json_encode($result));
     
                 $order->xendit_invoice_id = $result['id'];
                 $order->xendit_payment_url = $result['invoice_url'];
                 $order->save();
-            } else {
-                Log::info("Invoice sudah ada, langsung redirect.");
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
             }
-    
-            return redirect($order->xendit_payment_url);
-    
-        } catch (\Exception $e) {
-            Log::error("Gagal membuat invoice: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal membuat pembayaran: ' . $e->getMessage());
         }
+    
+        return redirect($order->xendit_payment_url);
     }
-}    
+}

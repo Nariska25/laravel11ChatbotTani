@@ -24,9 +24,6 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
-        // Tidak perlu memetakan route di sini secara manual karena Laravel 11 sudah otomatis memuat:
-        // - routes/web.php
-        // - routes/api.php
+        $this->loadRoutesFrom(base_path('routes/api.php'));
     }
 }

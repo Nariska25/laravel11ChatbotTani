@@ -111,9 +111,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// routes/web.php
-Route::post('/xendit/webhook', [WebhookController::class, 'handleXenditWebhook'])
-    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
     // profile admin
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {

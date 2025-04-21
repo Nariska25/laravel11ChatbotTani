@@ -3,102 +3,58 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
-    public function __construct()
-    {
-        // Hapus middleware web karena tidak diperlukan untuk webhook
-        // $this->middleware('web');
-    }
-
     public function handleXenditWebhook(Request $request)
     {
-        try {
-            // Validasi token callback
-            $expectedToken = config('services.xendit.callback_token');
-            if (empty($expectedToken)) {
-                throw new \Exception('XENDIT_CALLBACK_TOKEN not configured');
-            }
+        // Mendapatkan token dari header request
+        $token = $request->header('X-CALLBACK-TOKEN');
 
-            $token = $request->header('x-callback-token');
-            if ($token !== $expectedToken) {
-                Log::warning('Invalid webhook token', [
-                    'expected' => $expectedToken,
-                    'received' => $token,
-                    'ip' => $request->ip()
-                ]);
-                return response()->json(['error' => 'Unauthorized'], 403);
-            }
+        // Mengambil expected token dari file konfigurasi
+        $expectedToken = config('services.xendit.callback_token');
 
-            $data = $request->all();
-            Log::debug('Xendit Webhook Received:', $data);
+        // Log token yang diterima dan token yang diharapkan untuk debugging
+        Log::info('Token yang diterima dari header: ' . $token);
+        Log::info('Token yang diharapkan: ' . $expectedToken);
 
-            // Validasi payload
-            if (!isset($data['external_id'], $data['status'])) {
-                throw new \Exception('Invalid webhook payload');
-            }
-
-            // Ekstrak order_id dari external_id
-            if (!preg_match('/^order-(\d+)$/', $data['external_id'], $matches)) {
-                throw new \Exception('Invalid external_id format');
-            }
-
-            $orderId = $matches[1];
-            $order = Order::find($orderId);
-
-            if (!$order) {
-                throw new \Exception("Order {$orderId} not found");
-            }
-
-            // Handle status pembayaran
-            $this->handleOrderStatus($order, $data['status']);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Order updated',
-                'order_id' => $orderId,
-                'new_status' => $order->order_status
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Webhook Error: ' . $e->getMessage(), [
-                'exception' => $e,
-                'payload' => $request->all()
-            ]);
-            
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 400);
-        }
-    }
-
-    protected function handleOrderStatus(Order $order, string $status)
-    {
-        $originalStatus = $order->order_status;
-        
-        switch ($status) {
-            case 'PAID':
-                $order->order_status = 'Telah Dibayar';
-                break;
-            
-            case 'EXPIRED':
-                $order->order_status = 'Dibatalkan';
-                break;
-                
-            default:
-                throw new \Exception("Unhandled status: {$status}");
+        // Validasi token
+        if ($token !== $expectedToken) {
+            Log::warning('Token tidak valid');
+            return response()->json(['message' => 'Invalid token'], 403);
         }
 
-        $order->save();
+        // Log data webhook untuk melihat isi request
+        Log::info('Xendit Webhook diterima:', $request->all());
 
-        Log::info('Order status updated', [
-            'order_id' => $order->id,
-            'from' => $originalStatus,
-            'to' => $order->order_status,
-            'xendit_status' => $status
-        ]);
+        // Ambil data invoice dan status dari request
+        $invoiceId = $request->input('id');
+        $status = $request->input('status');
+
+        // Cari order berdasarkan invoice_id
+        $order = Order::where('xendit_invoice_id', $invoiceId)->first();
+
+        if ($order) {
+            // Update status order berdasarkan status pembayaran
+            if ($status === 'PAID') {
+                $order->order_status = 'Sudah Bayar';
+            } elseif ($status === 'EXPIRED') {
+                $order->order_status = 'Kadaluarsa';
+            } elseif ($status === 'FAILED') {
+                $order->order_status = 'Gagal';
+            }
+
+            // Simpan perubahan status
+            $order->save();
+            Log::info("Order {$order->order_id} diupdate menjadi: {$order->order_status}");
+        } else {
+            // Jika order tidak ditemukan
+            Log::warning("Order tidak ditemukan untuk invoice_id: $invoiceId");
+        }
+
+        // Mengembalikan response sukses
+        return response()->json(['status' => 'ok']);
     }
 }

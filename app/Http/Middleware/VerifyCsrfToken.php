@@ -13,8 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'xendit/webhook',
-        '/xendit/webhook',
-        'xendit/webhook/*'
     ];
     
 }
