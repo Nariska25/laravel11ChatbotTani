@@ -39,11 +39,11 @@ class WebhookController extends Controller
         if ($order) {
             // Update status order berdasarkan status pembayaran
             if ($status === 'PAID') {
-                $order->order_status = 'Sudah Bayar';
+                $order->order_status = 'Telah Dibayar';
             } elseif ($status === 'EXPIRED') {
                 $order->order_status = 'Kadaluarsa';
             } elseif ($status === 'FAILED') {
-                $order->order_status = 'Gagal';
+                $order->order_status = 'Dibatalkan';
             }
 
             // Simpan perubahan status
