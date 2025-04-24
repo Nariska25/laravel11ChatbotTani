@@ -27,18 +27,18 @@
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $voucher->id }}">
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('admin.vouchers.edit', $voucher->id) }}">
+                                        <a class="dropdown-item" href="{{ route('admin.voucher.edit', ['voucher' => $voucher->vouchers_id]) }}">
                                             <i class="fas fa-edit me-2"></i>Edit
-                                        </a>
+                                        </a>                                                                               
                                     </li>
                                     <li>
-                                        <form action="{{ route('admin.vouchers.destroy', $voucher->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('admin.voucher.destroy', ['voucher' => $voucher->vouchers_id]) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Are you sure you want to delete this voucher?')">
                                                 <i class="fas fa-trash me-2"></i>Delete
                                             </button>
-                                        </form>
+                                        </form>                                        
                                     </li>
                                 </ul>
                             </div>

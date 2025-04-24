@@ -35,27 +35,27 @@
                     @foreach ($sales as $sale)
                     <tr>
                         <td>{{ $sale->id }}</td>
-                        <td>{{ $sale->products->nama_produk }}</td>
-                        <td>Rp. {{ number_format($sale->products->harga, 0, '.', '.') }}</td>
+                        <td>{{ $sale->products->products_name }}</td>
+                        <td>Rp. {{ number_format($sale->products->price, 0, '.', '.') }}</td>
                         <td>
                             @if ($sale->status == 'active')
                                 @php
-                                    $hargaAsli = $sale->products->harga;
+                                    $originalprice = $sale->products->price;
                                     if ($sale->discount_type == 'percentage') {
-                                        $hargaDiskon = $hargaAsli - ($hargaAsli * ($sale->discount_value / 100));
+                                        $discountedprice = $originalprice - ($originalprice * ($sale->discount_value / 100));
                                     } else {
-                                        $hargaDiskon = max(0, $hargaAsli - $sale->discount_value);
+                                        $discountedprice = max(0, $originalprice - $sale->discount_value);
                                     }
                                 @endphp
                                 <span class="original-price text-decoration-line-through">
-                                    Rp. {{ number_format($hargaAsli, 0, '.', '.') }}
+                                    Rp. {{ number_format($originalprice, 0, '.', '.') }}
                                 </span>
                                 <span class="discounted-price text-danger">
-                                    Rp. {{ number_format($hargaDiskon, 0, '.', '.') }}
+                                    Rp. {{ number_format($discountedprice, 0, '.', '.') }}
                                 </span>
                             @else
                                 <span class="discounted-price">
-                                    Rp. {{ number_format($sale->products->harga, 0, '.', '.') }}
+                                    Rp. {{ number_format($sale->products->price, 0, '.', '.') }}
                                 </span>
                             @endif
                         </td>
@@ -70,8 +70,8 @@
                         <td>{{ $sale->end_date }}</td>
                         <td>{{ $sale->status == 'active' ? 'Aktif' : 'Tidak Aktif' }}</td>
                         <td>
-                            <a href="{{ route('admin.sales.edit', $sale->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.sales.destroy', $sale->id) }}" method="POST" style="display:inline;">
+                            <a href="{{ route('admin.sales.edit', $sale->sales_id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('admin.sales.destroy', $sale->sales_id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus sale ini?')">Hapus</button>

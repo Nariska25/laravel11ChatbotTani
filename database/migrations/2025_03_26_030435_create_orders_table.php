@@ -30,6 +30,7 @@ return new class extends Migration {
 
             $table->string('xendit_invoice_id')->nullable(); // UUID biasanya berupa string
             $table->string('xendit_payment_url', 255)->nullable(); // Memperpanjang URL hingga 255 karakter
+            $table->string('external_id')->nullable();
 
             $table->timestamps();
 

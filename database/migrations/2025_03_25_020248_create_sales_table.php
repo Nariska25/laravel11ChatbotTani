@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->decimal('discount_value', 10, 2);
             $table->dateTime('start_date');
             $table->dateTime('end_date');
-            $table->boolean('status')->default(1); // 1 = aktif, 0 = nonaktif
+            $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->timestamps();
         });
     }

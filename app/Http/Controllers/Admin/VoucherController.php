@@ -25,6 +25,7 @@ class VoucherController extends Controller
             'promotion_code' => 'required|string|unique:vouchers',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
+            'start_time' => 'required|date_format:H:i',
             'quantity' => 'required|integer',
             'promotion_type' => 'required|in:percentage,fixed_amount',
             'promotion_item' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -40,6 +41,7 @@ class VoucherController extends Controller
             'promotion_code' => $request->promotion_code,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
+            'start_time' => $request->start_time,
             'quantity' => $request->quantity,
             'promotion_type' => $request->promotion_type,
             'promotion_item' => $imagePath,
@@ -63,7 +65,7 @@ class VoucherController extends Controller
             'promotion_item' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $voucher->name = $request->name;
+        $voucher->promotion_code = $request->promotion_code;
 
         if ($request->hasFile('promotion_item')) {
             $path = $request->file('promotion_item')->store('promotion_items', 'public');

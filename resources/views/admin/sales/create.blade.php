@@ -19,10 +19,10 @@
         @csrf
 
         <div class="mb-3">
-            <label for="produk_id" class="form-label">Produk</label>
-            <select name="produk_id" class="form-control" required>
+            <label for="products_id" class="form-label">Produk</label>
+            <select name="products_id" class="form-control" required>
                 @foreach($products as $product)
-                    <option value="{{ $product->produk_id }}">{{ $product->nama_produk }}</option>
+                    <option value="{{ $product->products_id }}">{{ $product->products_name }}</option>
                 @endforeach
             </select>
         </div>

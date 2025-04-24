@@ -77,10 +77,10 @@
                             <h3 class="product-title">{{ Str::limit($product->products_name, 40) }}</h3>
                             <div class="price-wrapper">
                                 @if ($product->sale)
-                                    <span class="original-price">Rp. {{ number_format($products->price, 0, '.', '.') }}</span>
-                                    <span class="discounted-price">Rp. {{ number_format($product->discounted_price, 0, '.', '.') }}</span>
+                                    <span class="originalprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
+                                    <span class="discountedprice">Rp. {{ number_format($product->discounted_price, 0, '.', '.') }}</span>
                                 @else
-                                    <span class="discounted-price">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
+                                    <span class="discountedprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
                                 @endif
                             </div>
                             <div class="product-actions">
@@ -199,13 +199,13 @@
             margin-bottom: 1rem;
         }
 
-        .discounted-price {
+        .discountedprice {
             font-size: 1.25rem;
             font-weight: 700;
             color: #2563eb;
         }
 
-        .original-price {
+        .originalprice {
             font-size: 0.875rem;
             color: #718096;
             text-decoration: line-through;

@@ -9,11 +9,13 @@ class Voucher extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'vouchers_id'; // ✅ tambahkan baris ini
+    public $incrementing = true; // (opsional, default true, tapi pastikan)
+    protected $keyType = 'int';  // (opsional, kalau ID-nya integer)
+
     protected $fillable = [
-        'name', 'short_description', 'description', 
-        'terms_and_conditions', 'promotion_code', 
-        'start_date', 'end_date', 'start_time', 
-        'use_quantity', 'promotion_type', 'promotion_item', 'special_price'
+        'promotion_code', 'start_date', 'end_date', 'start_time', 
+        'quantity', 'promotion_type', 'promotion_item', 'discount', 
     ];
 
     public function isValid()
@@ -24,6 +26,6 @@ class Voucher extends Model
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'voucher_id', 'id');
+        return $this->hasMany(Order::class, 'voucher_id', 'vouchers_id');
     }
 }

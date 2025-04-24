@@ -4,18 +4,9 @@
 <div class="container mt-5">
     <h1 class="mb-4">Edit Voucher</h1>
 
-    <form action="{{ route('admin.voucher.update', $voucher->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.voucher.update', $voucher->vouchers_id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $voucher->name) }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" name="description" rows="3" required>{{ old('description', $voucher->description) }}</textarea>
-        </div>
         <div class="mb-3">
             <label for="promotion_code" class="form-label">Promotion Code</label>
             <input type="text" class="form-control" id="promotion_code" name="promotion_code" value="{{ old('promotion_code', $voucher->promotion_code) }}" required>
@@ -33,8 +24,8 @@
             <input type="time" class="form-control" id="start_time" name="start_time" value="{{ old('start_time', $voucher->start_time) }}" required>
         </div>
         <div class="mb-3">
-            <label for="use_quantity" class="form-label">Use Quantity</label>
-            <input type="number" class="form-control" id="use_quantity" name="use_quantity" value="{{ old('use_quantity', $voucher->use_quantity) }}" required>
+            <label for="quantity" class="form-label">Use Quantity</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ old('quantity', $voucher->quantity) }}" required>
         </div>
         <div class="mb-3">
             <label class="form-label">Promotion Type</label>
@@ -61,8 +52,8 @@
             @endif
         </div>
         <div class="mb-3">
-            <label for="special_price" class="form-label">Special Price</label>
-            <input type="number" class="form-control" id="special_price" name="special_price" value="{{ old('special_price', $voucher->special_price) }}" required>
+            <label for="discount" class="form-label">Discount</label>
+            <input type="number" class="form-control" id="discount" name="discount" value="{{ old('discount', $voucher->discount) }}" required>
         </div>
         <button type="submit" class="btn btn-primary">Update Voucher</button>
     </form>

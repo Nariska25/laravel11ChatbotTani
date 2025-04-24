@@ -114,6 +114,10 @@ Route::middleware('auth')->group(function () {
 
     // profile admin
     Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
+         // voucher admin
+         Route::resource('voucher', VoucherController::class);
+         
+        
         // dashboard admin
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         
@@ -134,15 +138,6 @@ Route::middleware('auth')->group(function () {
 
         // sales admin
         Route::resource('sales', SaleController::class);
-
-        // voucher admin
-        Route::resource('voucher', VoucherController::class);
-        Route::get('/admin/vouchers', [VoucherController::class, 'index'])->name('admin.vouchers');
-        Route::get('/vouchers/create', [VoucherController::class, 'create'])->name('vouchers.create');
-        Route::post('/vouchers', [VoucherController::class, 'store'])->name('vouchers.store');
-        Route::get('/vouchers/{voucher}/edit', [VoucherController::class, 'edit'])->name('vouchers.edit');
-        Route::put('/vouchers/{voucher}', [VoucherController::class, 'update'])->name('vouchers.update');
-        Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
 
         // pengiriman admin
         Route::resource('shipping', ShippingMethodController::class);
