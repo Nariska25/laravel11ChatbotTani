@@ -43,7 +43,7 @@
                                 <option value="" selected disabled>-- Select Courier --</option>
                                 @foreach($shippingMethods as $method)
                                     <option 
-                                        value="{{ $method->id }}"
+                                        value="{{ $method->shipping_methods_id }}"
                                         data-cost="{{ $method->cost }}"
                                         data-name="{{ $method->courier_service }}"
                                     >

@@ -39,11 +39,12 @@
                                 </span>
                             </td>
                             <td class="d-flex">
-                                <a href="{{ route('admin.shipping.edit', $method) }}" 
-                                   class="btn btn-sm btn-warning mr-2">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('admin.shipping.destroy', $method) }}" method="POST">
+                                <a href="{{ route('admin.shipping.edit', $method->shipping_methods_id) }}" 
+                                    class="btn btn-sm btn-warning mr-2">
+                                     <i class="fas fa-edit"></i>
+                                 </a>
+                                 
+                                <form action="{{ route('admin.shipping.destroy', $method->shipping_methods_id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger" 

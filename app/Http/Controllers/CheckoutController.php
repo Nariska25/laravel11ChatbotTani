@@ -70,11 +70,11 @@ class CheckoutController extends Controller
         $user = Auth::user();
     
         $request->validate([
-            'shipping_method_id' => 'required|exists:shipping_methods,id',
+            'shipping_method_id' => 'required|exists:shipping_methods,shipping_methods_id',
             'shipping_cost' => 'required|numeric|min:0',
         ]);
     
-        $shippingMethod = ShippingMethod::find($request->shipping_method_id);
+        $shippingMethod = ShippingMethod::where('shipping_methods_id', $request->shipping_method_id)->first(); // Updated query
     
     
         if (!$shippingMethod || $shippingMethod->cost != $request->shipping_cost) {
