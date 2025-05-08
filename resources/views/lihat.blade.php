@@ -169,25 +169,3 @@
     });
 </script>
 @endpush
-
-<style>
-    .product-details dl dt {
-        font-weight: 500;
-        color: #6c757d;
-    }
-    
-    .card-hover:hover {
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
-    
-    .quantity button {
-        padding: 0.375rem 0.75rem;
-    }
-    
-    .quantity input {
-        width: 50px;
-        border-color: #dee2e6;
-        background-color: #fff;
-    }
-</style>

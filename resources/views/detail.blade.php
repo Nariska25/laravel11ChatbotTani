@@ -94,33 +94,3 @@
 </script>     
 @endsection
 
-@push('styles')
-<style>
-    .quantity-input {
-        height: 50px;
-        font-size: 1.1rem;
-        font-weight: 500;
-    }
-    
-    .btn-plus, .btn-minus {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .btn-lg {
-        border-radius: 8px;
-    }
-    
-    .card {
-        border-radius: 12px;
-    }
-    
-    .btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-</style>
-@endpush

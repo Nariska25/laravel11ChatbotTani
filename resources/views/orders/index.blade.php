@@ -106,31 +106,4 @@
         </div>
     @endif
 </div>
-
-<style>
-    .pagination {
-        justify-content: center;
-        margin-top: 1rem;
-    }
-
-    .pagination .page-link {
-        border-radius: 50px;
-        padding: 0.375rem 0.75rem;
-        font-size: 0.9rem;
-        margin: 0 2px;
-        color: #198754; /* Bootstrap green */
-        border: 1px solid #dee2e6;
-    }
-
-    .pagination .page-item.active .page-link {
-        background-color: #198754;
-        border-color: #198754;
-        color: #fff;
-    }
-
-    .pagination .page-item.disabled .page-link {
-        color: #ccc;
-    }
-</style>
-
 @endsection

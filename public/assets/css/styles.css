@@ -1,0 +1,617 @@
+/* home.blade.php */
+.product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Maksimal 2 baris */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 3em; /* Untuk menjaga tinggi konsisten walau teks pendek */
+  }
+  
+  .product-card {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-details {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  #productsCarousel {
+    position: relative;
+    padding: 0 30px;
+  }
+  
+  .carousel-control-prev,
+  .carousel-control-next {
+    width: auto;
+    opacity: 1;
+  }
+  
+  .carousel-control-prev {
+    left: -15px;
+  }
+  
+  .carousel-control-next {
+    right: -15px;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-size: 60%;
+    width: 30px;
+    height: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    #productsCarousel {
+      padding: 0;
+    }
+  
+    .carousel-control-prev {
+      left: 0;
+    }
+  
+    .carousel-control-next {
+      right: 0;
+    }
+  }
+
+   /* shop.blade.php */
+   .promo-card {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    height: 350px;
+    transition: transform 0.3s ease;
+}
+
+.promo-card:hover {
+    transform: translateY(-5px);
+}
+
+.promo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.promo-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+}
+
+.promo-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.promo-text {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Product Cards */
+.product-card {
+    border: 1px solid #e9ecef;
+    border-radius: 0.7rem;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+}
+
+.product-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.product-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+.product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.05);
+}
+
+.product-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #dc3545;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.product-details {
+    padding: 1.5rem;
+}
+
+.product-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #2d3748;
+}
+
+.price-wrapper {
+    margin-bottom: 1rem;
+}
+
+.discountedprice {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.originalprice {
+    font-size: 0.875rem;
+    color: #718096;
+    text-decoration: line-through;
+    margin-right: 0.5rem;
+}
+
+.detail-btn, .add-to-cart-btn {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 0.5rem;
+}
+
+.add-to-cart-btn {
+    background: #28a745;
+    border: none;
+}
+
+.add-to-cart-btn:hover {
+    background: #218838;
+}
+
+/* Filter Section */
+.filter-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+.filter-label {
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.filter-select {
+    border: none;
+    background: transparent;
+    font-weight: 500;
+    width: auto;
+    max-width: 200px;
+}
+
+.search-input {
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #e2e8f0;
+}
+
+.search-btn {
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Pagination Styles */
+.pagination {
+    display: flex;
+    padding-left: 0;
+    list-style: none;
+    border-radius: 0.25rem;
+}
+
+.pagination .page-item .page-link {
+    position: relative;
+    display: block;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #007bff;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:hover {
+    z-index: 2;
+    color: #0056b3;
+    text-decoration: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+
+/* lihat.blade.php */
+.product-details dl dt {
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.quantity button {
+    padding: 0.375rem 0.75rem;
+}
+
+.quantity input {
+    width: 50px;
+    border-color: #dee2e6;
+    background-color: #fff;
+}
+
+
+/* detail.blade.php */
+.quantity-input {
+    height: 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.btn-plus, .btn-minus {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-lg {
+    border-radius: 8px;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* profile/alamat.blade.php */
+.profile-container {
+    background-color: #f9fafb;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+.profile-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.profile-img {
+    border-radius: 9999px;
+    height: 8rem;
+    width: 8rem;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.nav-item.active {
+    color: white;
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.nav-item:hover:not(.active) {
+    color: #111827;
+    background-color: #f9fafb;
+}
+.info-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+.info-value {
+    font-size: 0.875rem;
+    color: #111827;
+}
+.btn-success{
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #1a7e23, #198754);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #10b981, #0d9488);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #059669, #0f766e);
+}
+@media (min-width: 768px) {
+    .profile-flex {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+    .profile-sidebar {
+        width: 33.333333%;
+    }
+    .profile-content {
+        width: 66.666667%;
+    }
+}
+
+/* profile/show.blade.php */
+.profile-container {
+    background-color: #f9fafb;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+.profile-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.profile-img {
+    border-radius: 9999px;
+    height: 8rem;
+    width: 8rem;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.nav-item.active {
+    color: white;
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.nav-item:hover:not(.active) {
+    color: #111827;
+    background-color: #f9fafb;
+}
+.info-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+.info-value {
+    font-size: 0.875rem;
+    color: #111827;
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #1a7e23, #198754);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #10b981, #0d9488);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #059669, #0f766e);
+}
+@media (min-width: 768px) {
+    .profile-flex {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+    .profile-sidebar {
+        width: 33.333333%;
+    }
+    .profile-content {
+        width: 66.666667%;
+    }
+}
+
+/* profile/updatepassword.blade.php */
+.profile-container {
+    background-color: #f9fafb;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+.profile-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.profile-img {
+    border-radius: 9999px;
+    height: 8rem;
+    width: 8rem;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.nav-item.active {
+    color: white;
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.nav-item:hover:not(.active) {
+    color: #111827;
+    background-color: #f9fafb;
+}
+.info-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+.info-value {
+    font-size: 0.875rem;
+    color: #111827;
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #1a7e23, #198754);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #10b981, #0d9488);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #059669, #0f766e);
+}
+@media (min-width: 768px) {
+    .profile-flex {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+    .profile-sidebar {
+        width: 33.333333%;
+    }
+    .profile-content {
+        width: 66.666667%;
+    }
+}
+
+/* order/index.blade.php */
+.pagination {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pagination .page-link {
+    border-radius: 50px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    margin: 0 2px;
+    color: #198754; /* Bootstrap green */
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+}

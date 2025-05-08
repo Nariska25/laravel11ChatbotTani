@@ -75,7 +75,7 @@ class OrdersController extends Controller
                     'description' => 'Payment for Order #' . $order->id,
                     'amount' => $order->total_payment,
                     'success_redirect_url' => route('orders.show', $order->order_id),
-                    'callback_url' => 'https://a19f-103-153-149-59.ngrok-free.app/xendit/webhook', // <== ini penting!
+                    'callback_url' => 'https://d5b5-36-75-132-143.ngrok-free.app/xendit/webhook', // <== ini penting!
                 ]);
                 
     

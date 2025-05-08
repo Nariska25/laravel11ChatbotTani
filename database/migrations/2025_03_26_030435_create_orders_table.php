@@ -12,30 +12,33 @@ return new class extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id('order_id'); // Primary key
-            $table->unsignedBigInteger('user_id'); // Menyesuaikan dengan primary key di users
+            $table->unsignedBigInteger('user_id'); // Foreign key ke users
+            $table->unsignedBigInteger('shipping_methods_id')->nullable(); // FK ke shipping_methods
+            $table->unsignedBigInteger('vouchers_id')->nullable(); // FK ke vouchers
 
             $table->enum('order_status', ['Belum Bayar', 'Telah Dibayar', 'Sedang Dikemas', 'Dikirim', 'Selesai', 'Dibatalkan'])->default('Belum Bayar');
 
-            $table->decimal('subtotal', 10, 2); // Total price before shipping
+            $table->decimal('subtotal', 10, 2);
             $table->decimal('discount', 10, 2)->default(0);
-            $table->decimal('shipping_cost', 10, 2); // From RajaOngkir
-            $table->decimal('total_payment', 10, 2); // subtotal + shipping_cost - discount
+            $table->decimal('shipping_cost', 10, 2);
+            $table->decimal('total_payment', 10, 2);
 
-            $table->string('courier', 50); // jne, tiki, pos, etc.
-            $table->string('courier_service', 50); // REG, YES, OKE, etc.
-            $table->string('delivery_estimate',50); // Estimated delivery days
+            $table->string('courier', 50);
+            $table->string('courier_service', 50);
+            $table->string('delivery_estimate', 50);
 
-            $table->text('shipping_address'); // Use text for more flexibility
+            $table->text('shipping_address');
 
-
-            $table->string('xendit_invoice_id')->nullable(); // UUID biasanya berupa string
-            $table->string('xendit_payment_url', 255)->nullable(); // Memperpanjang URL hingga 255 karakter
+            $table->string('xendit_invoice_id')->nullable();
+            $table->string('xendit_payment_url', 255)->nullable();
             $table->string('external_id')->nullable();
 
             $table->timestamps();
 
-            // Tambahkan foreign key constraint
+            // Foreign key constraints
             $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('shipping_methods_id')->references('shipping_methods_id')->on('shipping_methods')->onDelete('set null');
+            $table->foreign('vouchers_id')->references('vouchers_id')->on('vouchers')->onDelete('set null');
         });
     }
 
