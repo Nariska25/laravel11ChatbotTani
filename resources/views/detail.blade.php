@@ -34,7 +34,7 @@
                     
                     <div class="mb-4">
                         <h5 class="fw-bold">Deskripsi Produk:</h5>
-                        <p class="mb-0">{{ $product->products_description }}</p>
+                        <p class="mb-0">{!! nl2br(e($product->products_description)) !!}</p>
                     </div>
                     
                     <hr>

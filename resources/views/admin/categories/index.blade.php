@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="container">
-    <h1>Data Kategori</h1>
+    <h1>Kelola Kategori</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Tabel Data Kategori</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Data Kategori</h6>
             <!-- Posisi tombol tambah produk di dalam card-header -->
             <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">Tambah Kategori</a>
         </div>

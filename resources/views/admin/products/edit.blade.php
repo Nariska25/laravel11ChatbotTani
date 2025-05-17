@@ -25,7 +25,7 @@
 
             <div class="form-group">
                 <label for="products_description">Deskripsi Produk</label>
-                <textarea name="products_description" id="products_description" class="form-control" required>{{ old('products_description', $product->products_description) }}</textarea>
+                <textarea name="products_description" id="products_description" class="form-control" rows="5" style="min-width: 100%;" required>{{ old('products_description', $product->products_description) }}</textarea>
                 @error('products_description')
                     <div class="text-danger">{{ $message }}</div>
                 @enderror

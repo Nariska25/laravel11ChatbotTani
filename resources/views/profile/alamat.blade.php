@@ -107,4 +107,96 @@
         </div>
     </div>
 </div>
+<style>
+    .profile-container {
+    background-color: #f9fafb;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+.profile-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.profile-img {
+    border-radius: 9999px;
+    height: 8rem;
+    width: 8rem;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+.nav-item.active {
+    color: white;
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.nav-item:hover:not(.active) {
+    color: #111827;
+    background-color: #f9fafb;
+}
+.info-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+.info-value {
+    font-size: 0.875rem;
+    color: #111827;
+}
+.btn-success{
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #1a7e23, #198754);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #1a7e23, #198754);
+}
+.btn-success {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(to right, #10b981, #0d9488);
+    border: transparent;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.btn-success:hover {
+    background: linear-gradient(to right, #059669, #0f766e);
+}
+@media (min-width: 768px) {
+    .profile-flex {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+    .profile-sidebar {
+        width: 33.333333%;
+    }
+    .profile-content {
+        width: 66.666667%;
+    }
+}
+</style>
 @endsection

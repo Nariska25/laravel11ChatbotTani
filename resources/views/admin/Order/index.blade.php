@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-5">
-    <h1 class="mb-4">B2B Order Management</h1>
+    <h1 class="mb-4">Kelola Order</h1>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs" id="orderTabs" role="tablist">

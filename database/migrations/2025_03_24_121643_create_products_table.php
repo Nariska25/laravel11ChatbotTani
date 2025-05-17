@@ -9,9 +9,9 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->bigIncrements('products_id'); // Perbaikan primary key
-            $table->string('products_name', 50);
+            $table->string('products_name', 250);
             $table->string('products_image', 250);
-            $table->string('products_description', 100)->nullable(); // Menggunakan string agar sesuai dengan varchar(100)
+            $table->longText('products_description')->nullable(); // Menggunakan string agar sesuai dengan varchar(100)
             $table->decimal('price', 10, 2);
             $table->integer('stock');
             $table->integer('recommendation')->default(0); // Tambahkan default agar lebih aman

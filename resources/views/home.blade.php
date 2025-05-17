@@ -126,29 +126,32 @@
           <div class="row g-4">
             @foreach($chunk as $product)
             <div class="col-xl-3 col-lg-4 col-md-6">
-              <div class="product-card bg-white rounded-4 shadow-sm h-100">
+              <div class="product-card bg-white rounded-4 shadow-sm d-flex flex-column h-100">
                 <div class="product-image position-relative">
-                  <img src="{{ asset('storage/' . $product->products_image) }}" class="product-img img-fluid w-100" alt="{{ $product->products_name }}" style="height: 200px; object-fit: cover;">
-                  @if ($product->sale)
+                  <img src="{{ asset('storage/' . $product->products_image) }}" class="product-img img-fluid w-100" alt="{{ $product->products_name }}" style="height: 290px; object-fit: cover;">
+                  @if ($product->sale && $product->discount_percentage > 0)
                     <div class="product-badge bg-danger text-white py-1 px-3 position-absolute top-0 end-0 m-3 rounded-pill small">
                       Sale {{ $product->discount_percentage }}%
                     </div>
                   @endif
                 </div>
-                <div class="product-details p-4 d-flex flex-column">
+                <div class="product-details p-4 d-flex flex-column justify-content-between flex-grow-1">
                   <h5 class="product-title fw-semibold mb-2">{{ $product->products_name }}</h5>
                   <div class="price-wrapper mb-3">
-                    @if ($product->sale)
-                      <span class="original-price text-decoration-line-through text-muted me-2">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
-                      <span class="discounted-price text-danger fw-bold">Rp{{ number_format($product->discounted_price, 0, ',', '.') }}</span>
+                    @if ($product->sale && $product->discounted_price < $product->price)
+                      <span class="original-price text-decoration-line-through text-muted me-2">
+                        Rp{{ number_format($product->price, 0, ',', '.') }}
+                      </span>
+                      <span class="discounted-price custom-price-blue fw-bold">
+                        Rp{{ number_format($product->discounted_price, 0, ',', '.') }}
+                      </span>
                     @else
-                      <span class="current-price fw-bold">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
+                      <span class="current-price custom-price-blue fw-bold">
+                        Rp{{ number_format($product->price, 0, ',', '.') }}
+                      </span>
                     @endif
-                  </div>
-                  <div class="product-actions d-flex gap-2">
-                    <a href="{{ route('detail', ['id' => $product->products_id]) }}" class="btn btn-outline-success btn-sm w-100 py-2">
-                      <i class="fas fa-eye me-2"></i> Detail
-                    </a>
+                  </div>                  
+                  <div class="product-actions mt-auto">
                     <form action="{{ route('cart.store') }}" method="POST" class="w-100">
                       @csrf
                       <input type="hidden" name="products_id" value="{{ $product->products_id }}">
@@ -156,7 +159,7 @@
                         <i class="fas fa-cart-plus me-2"></i> Beli
                       </button>
                     </form>
-                  </div>
+                  </div>                  
                 </div>
               </div>
             </div>
@@ -181,4 +184,83 @@
     </div>
   </div>
 </section>
+
+<style>
+
+.product-title {
+      font-size: 20px; /* Ukuran font */
+      display: -webkit-box; /* Menyusun elemen dengan model kotak fleksibel */
+      -webkit-line-clamp: 2; /* Membatasi jumlah baris menjadi 2 */
+      -webkit-box-orient: vertical; /* Mengatur orientasi kotak fleksibel ke arah vertikal */
+      overflow: hidden; /* Menyembunyikan teks yang melampaui batas */
+      text-overflow: ellipsis; /* Menambahkan elipsis '...' pada teks yang terpotong */
+      line-height: 1.2; /* Menyesuaikan tinggi baris agar lebih teratur */
+    }
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: none; /* hilangkan border merah debug */
+}
+.custom-price-blue {
+  font-size: 1.4rem; /* Lebih besar */
+  color: #007bff; /* Warna biru Bootstrap (atau ganti sesuai keinginan) */
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.product-actions .btn {
+  padding: 10px 20px;
+  width: 100%;
+  text-align: center;
+}
+
+#productsCarousel {
+  position: relative;
+  padding: 0 30px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+  width: auto;
+  opacity: 1;
+}
+
+.carousel-control-prev {
+  left: -15px;
+}
+
+.carousel-control-next {
+  right: -15px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-size: 60%;
+  width: 30px;
+  height: 30px;
+}
+
+@media (max-width: 768px) {
+  #productsCarousel {
+    padding: 0;
+  }
+
+  .carousel-control-prev {
+    left: 0;
+  }
+
+  .carousel-control-next {
+    right: 0;
+  }
+
+}
+
+</style>
 @endsection

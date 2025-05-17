@@ -9,6 +9,8 @@ class Sale extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'sales_id';
+    
     protected $fillable = [
         'products_id', 'discount_type', 'discount_value', 
         'start_date', 'end_date', 'status'

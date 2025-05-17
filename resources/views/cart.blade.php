@@ -3,6 +3,7 @@
 @section('title', 'Keranjang Belanja')
 
 @section('content')
+
 <div class="container py-5" style="margin-top: 100px;">
     <div class="row">
         <div class="col-lg-8">
@@ -27,23 +28,28 @@
                 </div>
             @endif
 
-            @if ($cartItems->isEmpty())
-                <div class="card shadow-sm border-0">
+            @if($cartItems->isEmpty())
+            <div class="col-12"> {{-- ubah lebar kolom menjadi penuh --}}
+                <div class="card border-0 shadow-sm rounded-3 w-100"> {{-- pastikan card juga full width --}}
                     <div class="card-body text-center py-5">
-                        <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
-                        <h5 class="fw-bold text-muted">Keranjang Anda kosong</h5>
-                        <p class="text-muted">Mulai belanja dan temukan produk menarik!</p>
-                        <a href="{{ route('shop.index') }}" class="btn btn-success  px-4">
-                            <i class="fas fa-store me-2"></i> Belanja Sekarang
+                        <div class="mb-4">
+                            <i class="fas fa-box-open fa-4x text-light"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Oops, your cart is empty!</h3>
+                        <p class="text-muted mb-4">Start shopping and discover interesting products!</p>
+                        <a href="{{ route('shop.index') }}" class="btn btn-success px-4 rounded-pill">
+                            <i class="fas fa-store me-2"></i> Browse Products
                         </a>
                     </div>
                 </div>
-            @else
+            </div>
+        @else        
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
                             @foreach ($cartItems as $cart)
                                 <div class="list-group-item p-4">
+                                    
                                     <div class="row align-items-center">
                                         <div class="col-auto">
                                             <img src="{{ asset('storage/' . $cart->product->products_image) }}" 

@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="container">
-    <h1>Data Sales</h1>
+    <h1>Kelola Sales</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Tabel Data Sales</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Data Sales</h6>
             <a href="{{ route('admin.sales.create') }}" class="btn btn-primary mb-3">Tambah Sale</a>
         </div>
 
@@ -70,12 +70,14 @@
                         <td>{{ $sale->end_date }}</td>
                         <td>{{ $sale->status == 'active' ? 'Aktif' : 'Tidak Aktif' }}</td>
                         <td>
-                            <a href="{{ route('admin.sales.edit', $sale->sales_id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.sales.destroy', $sale->sales_id) }}" method="POST" style="display:inline;">
+                            <div class="d-flex flex-column">
+                            <a href="{{ route('admin.sales.edit', $sale->sales_id) }}" class="btn btn-warning btn-sm mb-2">Edit</a>
+                            <form action="{{ route('admin.sales.destroy', $sale->sales_id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus sale ini?')">Hapus</button>
                             </form>
+                            </div>
                         </td>                
                     </tr>
                     @endforeach

@@ -42,7 +42,7 @@ class CategoryController extends Controller
         $category = Categories::findOrFail($id); // Laravel akan mencari berdasarkan `kategori_id`
 
         $request->validate([
-            'category_name' => 'required|string|max:255|unique:categories,category_name,' . $category->kategori_id . ',kategori_id',
+            'category_name' => 'required|string|max:255|unique:categories,category_name,' . $category->category_id . ',category_id',
         ]);
 
         $category->update([

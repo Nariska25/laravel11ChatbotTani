@@ -156,13 +156,14 @@
                         <span class="fw-bold">Total Payment:</span>
                         <span class="fw-bold">Rp {{ number_format($order->total_payment, 0, ',', '.') }}</span>
                     </div>
-                    @if($order->order_status === 'Belum Bayar' && $order->xendit_payment_url === null)
-                        <a href="{{ route('orders.pay', $order->order_id) }}"
+                    @if($order->order_status === 'Belum Bayar')
+                    <a href="{{ route('orders.pay', $order->order_id) }}"
+                        onclick="this.disabled = true; this.innerHTML = 'Memproses...';"
                         class="btn btn-warning w-100 py-2 rounded-pill mt-2">
-                            <i class="fas fa-credit-card me-2"></i>Bayar Sekarang
-                        </a>
+                        <i class="fas fa-credit-card me-2"></i>Bayar Sekarang
+                    </a>                    
                     @endif
-    
+
                     @if($order->order_status === 'Belum Bayar')
                     <form action="{{ route('orders.cancel', $order->order_id) }}" method="POST" class="mt-3">
                         @csrf

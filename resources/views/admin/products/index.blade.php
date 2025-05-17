@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="container">
-    <h1>Data Produk</h1>
+    <h1>Kelola Produk</h1>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">Tabel Data Produk</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Data Produk</h6>
             <!-- Posisi tombol tambah produk di dalam card-header -->
             <a href="{{ route('admin.products.create') }}" class="btn btn-primary border">Tambah Produk</a>
         </div>
@@ -16,6 +16,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
+                            <th>No</th>
                             <th>Nama Produk</th>
                             <th>Deskripsi Produk</th>
                             <th>Harga</th>
@@ -29,14 +30,17 @@
                     <tbody>
                         @foreach ($products as $product)
                             <tr>
+                                <td>{{ $loop->iteration }}</td> <!-- Nomor urut otomatis -->
                                 <td>{{ $product->products_name}}</td>
                                 <!-- Membatasi deskripsi produk -->
-                                <td class="text-truncate" style="max-width: 200px;">
-                                    {{ $product->products_description }}
-                                </td>
+                                <td style="max-width: 200px; max-height: 80px; overflow: hidden;">
+                                    <div style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                        {{ $product->products_description }}
+                                    </div>
+                                </td>                                
                                 <!-- Format harga dengan Rp dan pemisah ribuan -->
                                 <td>Rp. {{ number_format($product->price, 0, ',', '.') }}</td>
-                                <td>{{ $product->stok }}</td>
+                                <td>{{ $product->stock }}</td>
                                 <td>{{ optional($product->category)->category_name ?? 'Tidak ada kategori' }}</td>
                                 <td>
                                     @if ($product->products_image)
@@ -49,13 +53,15 @@
                                     {{ $product->recommendation == 1 ? 'checked' : '' }}>                                    
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.products.edit', $product->products_id) }}" class="btn btn-warning">Edit</a>
-                                    <form action="{{ route('admin.products.destroy', $product->products_id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
-                                </td>
+                                    <div class="d-flex flex-column">
+                                        <a href="{{ route('admin.products.edit', $product->products_id) }}" class="btn btn-warning btn-sm mb-2">Edit</a>
+                                        <form action="{{ route('admin.products.destroy', $product->products_id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>                                                                           
                             </tr>
                         @endforeach
                     </tbody>

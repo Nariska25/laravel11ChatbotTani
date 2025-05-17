@@ -19,7 +19,7 @@
 
         <div class="form-group">
             <label for="products_description">Deskripsi Produk</label>
-            <textarea name="products_description" id="products_description" class="form-control" placeholder="Masukkan Deskripsi" required>{{ old('products_description') }}</textarea>
+            <textarea name="products_description" id="products_description" class="form-control" rows="5" style="min-width: 100%;" placeholder="Masukkan Deskripsi" required>{{ old('products_description') }}</textarea>
         </div>
 
         <div class="form-group">

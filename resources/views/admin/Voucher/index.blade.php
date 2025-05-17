@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h1 class="mb-4">Vouchers</h1>
+    <h1 class="mb-4">Kelola Vouchers</h1>
     <a href="{{ route('admin.voucher.create') }}" class="btn btn-primary mb-4">Create New Voucher</a>
 
     <div class="row">
@@ -50,9 +50,3 @@
     </div>
 </div>
 @endsection
-
-<!-- Add Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-
-<!-- Add Bootstrap JS for Dropdown -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
