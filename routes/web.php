@@ -28,8 +28,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 });
 
-// Logout user
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 // route logout
 Route::middleware('auth')->group(function () {
@@ -65,21 +63,19 @@ Route::get('/produk/{id}', [ProductController::class, 'show'])
     ->middleware('auth')
     ->name('detail');
 
-// Profile routes
-Route::prefix('profile')->group(function () {
-    Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::middleware('auth')->prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
     
-    // Address routes
-    Route::get('/alamat', [ProfileController::class, 'alamat'])->name('profile.alamat');
-    Route::get('/alamat/edit', [ProfileController::class, 'editAlamat'])->name('profile.editalamat');
-    Route::put('/alamat/update', [ProfileController::class, 'updateAlamat'])->name('profile.updateAlamat');
+        Route::get('/alamat', [ProfileController::class, 'alamat'])->name('profile.alamat');
+        Route::get('/alamat/edit', [ProfileController::class, 'editAlamat'])->name('profile.editalamat');
+        Route::put('/alamat/update', [ProfileController::class, 'updateAlamat'])->name('profile.updateAlamat');
     
-    // Password routes
-    Route::get('/password', [ProfileController::class, 'password'])->name('profile.password');
-    Route::put('/password/update', [ProfileController::class, 'updatePassword'])->name('profile.updatepassword');
-});
+        Route::get('/password', [ProfileController::class, 'password'])->name('profile.password');
+        Route::put('/password/update', [ProfileController::class, 'updatePassword'])->name('profile.updatepassword');
+    });
+    
 
 
 Route::get('/chatroom', function () {
@@ -141,10 +137,7 @@ Route::middleware('auth')->group(function () {
 
         // pengiriman admin
         Route::resource('shipping', ShippingMethodController::class);
-        Route::get('/admin/shipping', [ShippingMethodController::class, 'index'])->name('admin.shipping');
-        Route::get('/shipping/create', [ShippingMethodController::class, 'create'])->name('shipping.create');
-        Route::post('/shipping', [ShippingMethodController::class, 'store'])->name('shipping.store');
-        Route::get('/shipping/{shipping}/edit', [ShippingMethodController::class, 'edit'])->name('shipping.edit');
-        Route::delete('/shipping/{shipping}', [ShippingMethodController::class, 'destroy'])->name('shipping.destroy');
         
     });
+
+   

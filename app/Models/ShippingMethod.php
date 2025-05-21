@@ -9,6 +9,11 @@ class ShippingMethod extends Model
 {
     use HasFactory;
 
+    protected $table = 'shipping_methods';
+    protected $primaryKey = 'shipping_methods_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'courier',
         'courier_service',

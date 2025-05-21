@@ -16,6 +16,8 @@
     </div>
 
     @include('admin.partials.footer') <!-- Memanggil footer -->
+    <!-- Bootstrap Bundle JS with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="{{ asset('admin/js/bootstrap-admin.bundle.min.js') }}"></script>
     <script src="{{ asset('admin/js/custom-admin.js') }}"></script>
@@ -28,8 +30,8 @@
 
     <!-- Page level plugins (if needed) -->
     <script src="{{ asset('admin/vendor/chart.js/Chart.min.js') }}"></script>
-    <script src="{{ asset('admin/js/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('admin/js/demo/chart-pie-demo.js') }}"></script>
+    {{-- <script src="{{ asset('admin/js/demo/chart-area-demo.js') }}"></script> --}}
+    {{-- <script src="{{ asset('admin/js/demo/chart-pie-demo.js') }}"></script> --}}
 
     <!-- Additional Scripts -->
     @stack('scripts')

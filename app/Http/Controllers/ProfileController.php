@@ -29,39 +29,28 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:15',
-            'gender' => 'required|string',
-            'dob' => 'nullable|date',
-            'image_path' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'name'        => 'required|string|max:255',
+            'phone'       => 'nullable|string|max:15',
+            'gender'      => 'required|string',
+            'dob'         => 'nullable|date',
+            'image_path'  => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
 
         $data = [
-            'name' => $request->name,
-            'phone' => $request->phone,
+            'name'   => $request->name,
+            'phone'  => $request->phone,
             'gender' => $request->gender,
-            'dob' => $request->dob,
+            'dob'    => $request->dob,
         ];
 
         if ($request->hasFile('image_path')) {
             $file = $request->file('image_path');
-        
-            // Debug info
-            logger('UPLOAD FILE DEBUG', [
-                'originalName' => $file->getClientOriginalName(),
-                'isValid' => $file->isValid(),
-                'path' => $file->path(),
-                'mime' => $file->getMimeType(),
-            ]);
-        
+
+            // Simpan file
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('profile_images', $filename, 'public');
-        
-            // Simpan path ke database
             $data['image_path'] = 'profile_images/' . $filename;
         }
-        
-        
 
         $user->update($data);
 
@@ -74,31 +63,39 @@ class ProfileController extends Controller
         return view('profile.alamat', compact('user'));
     }
 
-    public function editAlamat()
+    public function editAlamat(Request $request)
     {
+        if ($request->has('redirect')) {
+            session(['redirect_after_update' => $request->redirect]);
+        }
+
         $user = Auth::user();
-        return view('profile.editalamat', compact('user'));
+        return view('profile.editAlamat', compact('user'));
     }
 
     public function updateAlamat(Request $request)
     {
-        $request->validate([
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:10',
-            'province' => 'required|string|max:100',
-        ]);
-
         $user = Auth::user();
 
-        $user->update([
-            'address' => $request->address,
-            'city' => $request->city,
-            'postal_code' => $request->postal_code,
-            'province' => $request->province,
+        $request->validate([
+            'address'     => 'required|string',
+            'city'        => 'required|string',
+            'province'    => 'required|string',
+            'postal_code' => 'required|string',
+            'phone'       => 'required|string',
         ]);
 
-        return redirect()->route('profile.alamat')->with('success', 'Alamat berhasil diperbarui!');
+        $user->update([
+            'address'     => $request->address,
+            'city'        => $request->city,
+            'province'    => $request->province,
+            'postal_code' => $request->postal_code,
+            'phone'       => $request->phone,
+        ]);
+
+        $redirectUrl = session()->pull('redirect_after_update', route('checkout.index'));
+
+        return redirect($redirectUrl)->with('success', 'Alamat berhasil diperbarui.');
     }
 
     public function password()
@@ -113,22 +110,18 @@ class ProfileController extends Controller
 
         $request->validate([
             'current_password' => ['required'],
-            'new_password' => [
+            'new_password'     => [
                 'required',
                 'min:8',
                 'confirmed',
-                Password::min(8)
-                    ->letters()
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(),
-                Rule::notIn([$user->email])
+                Password::min(8)->letters()->mixedCase()->numbers()->symbols(),
+                Rule::notIn([$user->email]),
             ],
         ], [
-            'new_password.not_in' => 'Password tidak boleh sama dengan email Anda.',
-            'new_password.mixedCase' => 'Password harus memiliki huruf besar dan kecil.',
-            'new_password.numbers' => 'Password harus memiliki setidaknya satu angka.',
-            'new_password.symbols' => 'Password harus memiliki setidaknya satu karakter khusus.',
+            'new_password.not_in'     => 'Password tidak boleh sama dengan email Anda.',
+            'new_password.mixedCase'  => 'Password harus memiliki huruf besar dan kecil.',
+            'new_password.numbers'    => 'Password harus memiliki setidaknya satu angka.',
+            'new_password.symbols'    => 'Password harus memiliki setidaknya satu karakter khusus.',
         ]);
 
         if (!Hash::check($request->current_password, $user->password)) {

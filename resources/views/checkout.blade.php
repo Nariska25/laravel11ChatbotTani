@@ -23,9 +23,9 @@
                             <p><strong>Province:</strong> {{ $user->province }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('profile.editalamat') }}" class="btn btn-outline-success  btn-sm mt-3">
-                        <i class="fas fa-edit"></i> Edit Address
-                    </a>
+                    <a href="{{ route('profile.editalamat', ['redirect' => route('checkout.index', ['selected_products' => request('selected_products')])]) }}" class="btn btn-sm btn-primary">
+                        Edit Alamat
+                    </a>                                                                  
                 </div>
             </div>
 
@@ -213,7 +213,7 @@
             const total = subtotal + shippingCost - discountAmount;
 
             shippingCostDisplay.textContent = formatRupiah(shippingCost);
-            discountDisplay.textContent = formatRupiah(discountAmount);
+            discountDisplay.textContent = '-' + formatRupiah(discountAmount);
             totalPaymentDisplay.textContent = formatRupiah(total);
         }
 

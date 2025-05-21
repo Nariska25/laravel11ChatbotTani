@@ -9,9 +9,12 @@ class Voucher extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'vouchers_id'; // ✅ tambahkan baris ini
-    public $incrementing = true; // (opsional, default true, tapi pastikan)
-    protected $keyType = 'int';  // (opsional, kalau ID-nya integer)
+    protected $table = 'vouchers';
+
+    protected $primaryKey = 'vouchers_id'; // ✅ Tambahkan ini
+
+    public $incrementing = true; // Opsional, default-nya true
+    protected $keyType = 'int';  // Jika tipe datanya integer
 
     protected $fillable = [
         'promotion_code', 'start_date', 'end_date', 'start_time', 

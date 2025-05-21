@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
@@ -18,16 +18,28 @@ class CheckoutController extends Controller
 
         $user = Auth::user();
 
-        $cartItems = Cart::with('product')->where('user_id', $user->user_id)->get();
+        $selectedProducts = $request->query('selected_products'); // "1,2,3" misalnya
+
+        if (!$selectedProducts) {
+            return redirect()->route('cart.index')->with('error', 'Tidak ada produk yang dipilih.');
+        }
+
+        // Ubah string menjadi array id produk
+        $selectedIds = explode(',', $selectedProducts);
+
+        // Ambil cart item yang user miliki dan masuk dalam selectedIds
+        $cartItems = Cart::with('product')
+                        ->where('user_id', $user->user_id)
+                        ->whereIn('carts_id', $selectedIds)
+                        ->get();
 
         if ($cartItems->isEmpty()) {
-            return redirect()->route('cart.index')->with('error', 'Keranjang belanja kosong.');
+            return redirect()->route('cart.index')->with('error', 'Produk yang dipilih tidak ditemukan.');
         }
 
         $subtotal = $cartItems->sum(function ($item) {
             return optional($item->product)->price * $item->amount;
         });
-
 
         $shippingMethods = ShippingMethod::where('is_active', true)->get();
 
@@ -38,6 +50,7 @@ class CheckoutController extends Controller
             'shippingMethods'
         ));
     }
+
 
     public function applyVoucher(Request $request)
     {
@@ -119,6 +132,7 @@ class CheckoutController extends Controller
                     'province' => $user->province,
                     'postal_code' => $user->postal_code,
                 ]),
+                'expires_at' => now()->addHours(24), // ✅ tambahan ini
             ];
     
             // dd($orderData); // Ini yang benar, bukan dd($order) sebelum didefinisikan
@@ -133,16 +147,28 @@ class CheckoutController extends Controller
                     \Log::warning('Produk tidak ditemukan untuk cart item ID: ' . $item->id);
                     continue;
                 }
-    
+            
+                $product = $item->product;
+            
+                // Cek apakah stok cukup
+                if ($product->stock < $item->amount) {
+                    throw new \Exception('Stok tidak mencukupi untuk produk: ' . $product->products_name);
+                }
+            
+                // Kurangi stok produk
+                $product->stock -= $item->amount;
+                $product->save();
+            
                 $itemData = [
-                    'products_id' => $item->product->products_id,
-                    'products_name' => $item->product->products_name,
+                    'products_id' => $product->products_id,
+                    'products_name' => $product->products_name,
                     'amount' => $item->amount,
-                    'price' => $item->product->price,
-                    'subtotal' => $item->product->price * $item->amount,
+                    'price' => $product->price,
+                    'subtotal' => $product->price * $item->amount,
                     'discount' => 0,
-                    'total' => $item->product->price * $item->amount,
+                    'total' => $product->price * $item->amount,
                 ];
+                        
     
                 // dd($itemData); // ✅ Debug 6: Cek data item sebelum disimpan ke order_items
     

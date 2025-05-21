@@ -7,7 +7,7 @@
             <h5 class="mb-0">Edit Shipping Method</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('admin.shipping.update', $shippingMethod) }}" method="POST">
+            <form action="{{ route('admin.shipping.update', ['shipping' => $shippingMethod->shipping_methods_id]) }}" method="POST">
                 @csrf
                 @method('PUT')
 

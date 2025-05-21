@@ -20,9 +20,15 @@
         @endphp
         @foreach($statuses as $key => $orders)
             <li class="nav-item">
-                <button class="nav-link {{ $loop->first ? 'active' : '' }}" data-bs-toggle="tab" data-bs-target="#{{ Str::slug($key) }}" type="button" role="tab">
+                <button class="nav-link {{ $loop->first ? 'active' : '' }}" 
+                    data-bs-toggle="tab" 
+                    data-bs-target="#{{ Str::slug($key) }}" 
+                    type="button" 
+                    role="tab"
+                    onclick="location.hash='{{ Str::slug($key) }}'">
                     {{ $key }} ({{ $orders->count() }})
                 </button>
+                
             </li>
         @endforeach
     </ul>
@@ -108,4 +114,35 @@
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hash = window.location.hash;
+        if (hash) {
+            const triggerEl = document.querySelector(`button[data-bs-target="${hash}"]`);
+            if (triggerEl) {
+                const tab = new bootstrap.Tab(triggerEl);
+                tab.show();
+            }
+        }
+
+        // Saat user klik tombol update status (form submit), simpan tab ke localStorage
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', () => {
+                localStorage.setItem('activeTab', window.location.hash);
+            });
+        });
+
+        // Setelah reload, kembalikan tab yang disimpan
+        const savedTab = localStorage.getItem('activeTab');
+        if (savedTab) {
+            const savedTrigger = document.querySelector(`button[data-bs-target="${savedTab}"]`);
+            if (savedTrigger) {
+                new bootstrap.Tab(savedTrigger).show();
+            }
+            localStorage.removeItem('activeTab'); // bersihkan setelah dipakai
+        }
+    });
+</script>
+
 @endsection

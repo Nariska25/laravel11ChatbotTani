@@ -67,9 +67,12 @@
                     <div class="product-card">
                         <div class="product-image">
                             <img src="{{ asset('storage/' . $product->products_image) }}" 
-                                 class="product-img" 
-                                 alt="{{ $product->products_name }}">
-                            @if ($product->sale)
+                                class="product-img {{ $product->stock == 0 ? 'grayscale' : '' }}" 
+                                alt="{{ $product->products_name }}">
+
+                            @if ($product->stock == 0)
+                                <div class="product-badge badge-out">Habis</div>
+                            @elseif ($product->sale)
                                 <div class="product-badge">Sale</div>
                             @endif
                         </div>
@@ -84,10 +87,16 @@
                                 @endif
                             </div>
                             <div class="product-actions">
+                                @if ($product->stock == 0)
+                                <button class="btn btn-secondary detail-btn" disabled>
+                                    <i class="fas fa-eye me-2"></i>View Details
+                                </button>
+                            @else
                                 <a href="{{ route('detail', ['id' => $product->products_id]) }}" 
-                                   class="btn btn-success detail-btn">
+                                class="btn btn-success detail-btn">
                                     <i class="fas fa-eye me-2"></i>View Details
                                 </a>
+                            @endif
                             </div>
                         </div>
                     </div>
@@ -96,13 +105,30 @@
         </div>
 
         <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-5">
-            {{ $products->links('pagination::bootstrap-5') }}
+        <div class="mt-5">
+            <div class="d-flex justify-content-center">
+                {{ $products->onEachSide(1)->links('pagination::bootstrap-5') }}
+            </div>
         </div>
     </section>
 </div>
 
 <style>
+    .grayscale {
+    filter: grayscale(100%);
+    opacity: 0.7;
+}
+
+.product-badge.badge-out {
+    background: #6c757d; /* warna abu-abu */
+}
+.detail-btn:disabled {
+    background-color: #6c757d !important; /* abu-abu */
+    border-color: #6c757d !important;
+    color: white !important;
+    cursor: not-allowed;
+    opacity: 1; /* hilangkan transparansi default */
+}
       .promo-card {
     position: relative;
     border-radius: 1rem;
@@ -266,43 +292,33 @@
 
 /* Pagination Styles */
 .pagination {
-    display: flex;
-    padding-left: 0;
-    list-style: none;
-    border-radius: 0.25rem;
-}
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+    }
 
-.pagination .page-item .page-link {
-    position: relative;
-    display: block;
-    padding: 0.5rem 0.75rem;
-    margin-left: -1px;
-    line-height: 1.25;
-    color: #007bff;
-    background-color: #fff;
+    .pagination .page-item {
+        flex-shrink: 0;
+    }
+
+.pagination .page-link {
+    border-radius: 50px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    margin: 0 2px;
+    color: #198754; /* Bootstrap green */
     border: 1px solid #dee2e6;
 }
 
 .pagination .page-item.active .page-link {
-    z-index: 3;
+    background-color: #198754;
+    border-color: #198754;
     color: #fff;
-    background-color: #007bff;
-    border-color: #007bff;
 }
 
 .pagination .page-item.disabled .page-link {
-    color: #6c757d;
-    pointer-events: none;
-    background-color: #fff;
-    border-color: #dee2e6;
-}
-
-.pagination .page-link:hover {
-    z-index: 2;
-    color: #0056b3;
-    text-decoration: none;
-    background-color: #e9ecef;
-    border-color: #dee2e6;
+    color: #ccc;
 }
     </style>
 @endsection

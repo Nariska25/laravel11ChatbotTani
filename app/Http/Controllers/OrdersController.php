@@ -17,7 +17,7 @@ class OrdersController extends Controller
     {
         $orders = Order::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
-            ->paginate(5); 
+            ->paginate(9); 
 
         return view('orders.index', compact('orders'));
     }
@@ -84,7 +84,7 @@ class OrdersController extends Controller
             $description = 'Payment for Order #' . $order->order_id;
             $amount = (int) $order->total_payment;
             $successUrl = route('orders.show', $order->order_id);
-            $callbackUrl = 'https://d5b5-36-75-132-143.ngrok-free.app/xendit/webhook';  // pastikan route webhook sudah terdaftar
+            $callbackUrl = 'https://2db6-103-153-149-59.ngrok-free.app/xendit/webhook';  // pastikan route webhook sudah terdaftar
             
             Log::info("Membuat invoice Xendit dengan data:", [
                 'external_id' => $externalId,

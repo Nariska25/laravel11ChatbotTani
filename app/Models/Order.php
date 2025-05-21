@@ -26,7 +26,8 @@ class Order extends Model
         'payment_status',
         'xendit_invoice_id',
         'xendit_payment_url',
-        'external_id', // Menambahkan kolom external_id
+        'external_id', 
+        'expires_at',// Menambahkan kolom external_id
     ];
 
     public function user()

@@ -59,13 +59,13 @@ class CartController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'amount' => 'required|integer|min:1',
         ]);
 
         $cart = Cart::findOrFail($id);
         $product = $cart->product;
 
-        if ($request->quantity > $product->stock) {
+        if ($request->amount > $product->stock) {
             return response()->json([
                 'success' => false, 
                 'message' => 'Jumlah melebihi stok yang tersedia',
@@ -73,7 +73,7 @@ class CartController extends Controller
             ], 400);
         }
 
-        $cart->amount = $request->quantity;
+        $cart->amount = $request->amount;
         $cart->subtotal = $product->price * $cart->amount;
         $cart->total = $cart->subtotal; // tanpa diskon
         $cart->save();

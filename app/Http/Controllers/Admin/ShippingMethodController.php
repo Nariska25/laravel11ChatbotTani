@@ -35,12 +35,13 @@ class ShippingMethodController extends Controller
             ->with('success', 'Shipping method created successfully.');
     }
 
-    public function edit(ShippingMethod $shippingMethod)
+    public function edit(ShippingMethod $shipping)
     {
-        return view('admin.shipping.edit', compact('shippingMethod'));
+        return view('admin.shipping.edit', ['shippingMethod' => $shipping]);
     }
 
-    public function update(Request $request, ShippingMethod $shippingMethod)
+
+    public function update(Request $request, ShippingMethod $shipping)
     {
         $validated = $request->validate([
             'courier' => 'required|string|max:255',
@@ -50,17 +51,16 @@ class ShippingMethodController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        $shippingMethod->update($validated);
-
-        return redirect()->route('admin.shipping.index')
-            ->with('success', 'Shipping method updated successfully.');
+        $shipping->update($validated);
+    return redirect()->route('admin.shipping.index')
+        ->with('success', 'Shipping method updated successfully.');
     }
 
-    public function destroy(ShippingMethod $shippingMethod)
+    public function destroy(ShippingMethod $shipping)
     {
-        $shippingMethod->delete();
-
+        $shipping->delete();
         return redirect()->route('admin.shipping.index')
             ->with('success', 'Shipping method deleted successfully.');
     }
+    
 }

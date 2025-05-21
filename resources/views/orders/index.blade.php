@@ -20,7 +20,7 @@
                 </div>
                 <h3 class="h4 mb-3">No Orders Found</h3>
                 <p class="text-muted mb-4">You haven't placed any orders yet.</p>
-                <a href="{{ route('shop.index') }}" class="btn btn-success  px-4 rounded-pill">
+                <a href="{{ route('shop.index') }}" class="btn btn-success px-4 rounded-pill">
                     <i class="fas fa-store me-2"></i> Browse Products
                 </a>
             </div>
@@ -99,11 +99,44 @@
             @endforeach
         </div>
 
-        <div class="d-flex justify-content-center mt-4">
-            <nav aria-label="Page navigation">
-                {{ $orders->onEachSide(1)->links() }}
-            </nav>
+        <!-- Pagination -->
+        <div class="mt-5">
+            <div class="d-flex justify-content-center">
+                {{ $orders->onEachSide(1)->links('pagination::bootstrap-5') }}
+            </div>
         </div>
     @endif
 </div>
+
+<style>
+ .pagination {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 0.5rem;
+    }
+
+    .pagination .page-item {
+        flex-shrink: 0;
+    }
+
+.pagination .page-link {
+    border-radius: 50px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    margin: 0 2px;
+    color: #198754; /* Bootstrap green */
+    border: 1px solid #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+}
+</style>
 @endsection
