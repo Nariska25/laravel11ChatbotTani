@@ -59,10 +59,10 @@
                             <div class="icon-wrapper" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(25, 135, 84, 0.1); border-radius: 50%; transition: all 0.3s;">
                                 <i class="fa fa-shopping-bag fa-lg text-success"></i>
                             </div>
-                            @if(session('cart_count', 0) > 0)
+                            @if($cartCount > 0)
                                 <span class="position-absolute bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" 
                                     style="top: -5px; right: -5px; height: 22px; min-width: 22px; font-size: 0.75rem; border: 2px solid white;">
-                                    {{ session('cart_count', 0) }}
+                                    {{ $cartCount }}
                                 </span>
                             @endif
                         </a>

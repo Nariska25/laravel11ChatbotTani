@@ -14,12 +14,8 @@ return new class extends Migration {
             $table->id('order_item_id'); // Primary key
             $table->unsignedBigInteger('order_id'); // Foreign key ke orders
             $table->unsignedBigInteger('products_id'); // Foreign key ke products
-            $table->string('products_name', 100); // Memperpanjang maksimal karakter
             $table->integer('amount'); // Jumlah produk
-            $table->decimal('price', 10, 2); // Harga produk per unit
             $table->decimal('subtotal', 10, 2); // Subtotal = amount * price
-            $table->decimal('discount', 10, 2)->default(0); // Diskon jika ada
-            $table->decimal('total', 10, 2); // Total setelah diskon
             $table->timestamps();
 
             // Foreign key untuk orders

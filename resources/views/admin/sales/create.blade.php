@@ -28,14 +28,6 @@
         </div>
 
         <div class="mb-3">
-            <label for="discount_type" class="form-label">Jenis Diskon</label>
-            <select name="discount_type" class="form-control" required>
-                <option value="percentage">Persentase (%)</option>
-                <option value="fixed">Potongan Harga (Rp)</option>
-            </select>
-        </div>
-
-        <div class="mb-3">
             <label for="discount_value" class="form-label">Nilai Diskon</label>
             <input type="number" name="discount_value" class="form-control" required min="0">
         </div>

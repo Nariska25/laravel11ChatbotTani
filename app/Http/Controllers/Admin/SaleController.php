@@ -29,7 +29,6 @@ class SaleController extends Controller
         // Validasi input yang diterima
         $request->validate([
             'products_id' => 'required|exists:products,products_id',
-            'discount_type' => 'required|in:percentage,fixed',
             'discount_value' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -39,7 +38,6 @@ class SaleController extends Controller
         // Menyimpan data sale baru, memastikan status disimpan dengan nilai yang benar
         Sale::create([
             'products_id' => $request->products_id,
-            'discount_type' => $request->discount_type,
             'discount_value' => $request->discount_value,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -61,7 +59,6 @@ class SaleController extends Controller
     {
         // Validasi input yang diterima
         $request->validate([
-            'discount_type' => 'required',
             'discount_value' => 'required|numeric',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -73,7 +70,6 @@ class SaleController extends Controller
         
         // Perbarui data sale
         $sale->update([
-            'discount_type' => $request->discount_type,
             'discount_value' => $request->discount_value,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,

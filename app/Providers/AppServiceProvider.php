@@ -4,7 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
-
+use Illuminate\Support\Facades\View;
+use App\Models\CartDetail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        
+        //
     }
 
     /**
@@ -21,6 +22,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrapFive();
+        View::composer('partials.header', function ($view) {
+            $count = auth()->check()
+                ? \App\Models\CartDetail::whereHas('cart', function ($query) {
+                    $query->where('user_id', auth()->id());
+                })->whereHas('product')->count()
+                : 0;
+        
+            $view->with('cartCount', $count);
+        });
     }
 }

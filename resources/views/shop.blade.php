@@ -78,14 +78,12 @@
                         </div>
                         <div class="product-details">
                             <h3 class="product-title">{{ Str::limit($product->products_name, 40) }}</h3>
-                            <div class="price-wrapper">
-                                @if ($product->sale)
-                                    <span class="originalprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
-                                    <span class="discountedprice">Rp. {{ number_format($product->discounted_price, 0, '.', '.') }}</span>
-                                @else
-                                    <span class="discountedprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
-                                @endif
-                            </div>
+                            @if ($product->activeSale) 
+                                <span class="originalprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
+                                <span class="discountedprice">Rp. {{ number_format($product->discounted_price, 0, '.', '.') }}</span>
+                            @else
+                                <span class="discountedprice">Rp. {{ number_format($product->price, 0, '.', '.') }}</span>
+                            @endif
                             <div class="product-actions">
                                 @if ($product->stock == 0)
                                 <button class="btn btn-secondary detail-btn" disabled>

@@ -15,13 +15,10 @@ return new class extends Migration
             $table->id('user_id'); // Mengganti id menjadi user_id (int, auto increment)
             $table->string('name', 50); // varchar 50
             $table->string('email')->unique();
-            $table->unsignedBigInteger('city_id')->nullable(); // int (nullable)
             $table->enum('role', ['user', 'admin'])->default('user'); // enum
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 250); // varchar 250
             $table->string('phone', 13)->nullable(); // varchar 13
             $table->enum('gender', ['male', 'female'])->nullable(); // enum
-            $table->date('dob')->nullable(); // date
             $table->string('image_path', 250)->nullable(); // varchar 250
             $table->enum('status', ['active', 'inactive'])->default('active'); // enum
             $table->string('address', 100)->nullable(); // varchar 100

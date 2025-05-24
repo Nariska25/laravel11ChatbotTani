@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->boolean('status')->default(1); // aktif secara default
+        Schema::table('carts', function (Blueprint $table) {
+            $table->dropColumn('products_id');
         });
     }
-
+    
     public function down()
     {
-        Schema::table('vouchers', function (Blueprint $table) {
-            $table->dropColumn('status');
+        Schema::table('carts', function (Blueprint $table) {
+            $table->unsignedBigInteger('products_id');
         });
     }
 };

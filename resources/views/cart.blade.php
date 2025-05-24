@@ -47,26 +47,26 @@
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
-                            @foreach ($cartItems as $cart)
+                            @foreach ($cartItems as $item)
                                 <div class="list-group-item p-4">
                                     <div class="row align-items-center">
                                         <div class="col-auto d-flex align-items-center">
                                             <input type="checkbox" class="product-checkbox me-3" 
-                                                data-id="{{ $cart->carts_id }}" 
-                                                data-price="{{ $cart->product->price }}" 
-                                                data-amount="{{ $cart->amount }}">
-                                            <img src="{{ asset('storage/' . $cart->product->products_image) }}" 
-                                                 alt="{{ $cart->product->products_name }}" 
+                                                data-id="{{ $item->carts_detail_id }}" 
+                                                data-price="{{ $item->product->price }}" 
+                                                data-amount="{{ $item->amount }}">
+                                            <img src="{{ asset('storage/' . $item->product->products_image) }}" 
+                                                 alt="{{ $item->product->products_name }}" 
                                                  class="rounded-3" 
                                                  style="width: 90px; height: 90px; object-fit: cover;">
                                         </div>
                                         <div class="col">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <div>
-                                                    <h5 class="fw-bold mb-1">{{ $cart->product->products_name }}</h5>
-                                                    <p class="text-muted mb-1">Stok: {{ $cart->product->stock }}</p>
+                                                    <h5 class="fw-bold mb-1">{{ $item->product->products_name }}</h5>
+                                                    <p class="text-muted mb-1">Stok: {{ $item->product->stock }}</p>
                                                 </div>
-                                                <form action="{{ route('cart.remove', $cart->carts_id) }}" method="POST">
+                                                <form action="{{ route('cart.remove', $item->carts_detail_id) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -77,29 +77,29 @@
                                             
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <p class="fw-bold mb-0 text-success">Rp {{ number_format($cart->product->price, 0, ',', '.') }}</p>
+                                                    <p class="fw-bold mb-0 text-success">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
                                                 </div>
                                                 <div class="d-flex align-items-center">
                                                     <button class="btn btn-outline-secondary btn-sm btn-minus" 
-                                                            data-id="{{ $cart->carts_id }}" type="button">
+                                                            data-id="{{ $item->carts_detail_id }}" type="button">
                                                         <i class="fas fa-minus"></i>
                                                     </button>
                                                     <input type="text" 
                                                            class="form-control form-control-sm text-center mx-2 amount-input" 
-                                                           value="{{ $cart->amount }}" 
+                                                           value="{{ $item->amount }}" 
                                                            style="width: 60px;"
-                                                           data-id="{{ $cart->carts_id }}"
-                                                           data-price="{{ $cart->product->price }}"
-                                                           data-max="{{ $cart->product->stock }}">
+                                                           data-id="{{ $item->carts_detail_id }}"
+                                                           data-price="{{ $item->product->price }}"
+                                                           data-max="{{ $item->product->stock }}">
                                                     <button class="btn btn-outline-secondary btn-sm btn-plus" 
-                                                            data-id="{{ $cart->carts_id }}" type="button">
+                                                            data-id="{{ $item->carts_detail_id }}" type="button">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
                                                 </div>
                                                 <div>
                                                     <p class="fw-bold mb-0 total-price-per-product" 
-                                                       id="totalPrice{{ $cart->carts_id }}">
-                                                        Rp {{ number_format($cart->product->price * $cart->amount, 0, ',', '.') }}
+                                                       id="totalPrice{{ $item->carts_detail_id }}">
+                                                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -124,10 +124,16 @@
                         <span class="text-muted">Subtotal</span>
                         <span id="subtotal">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
                     </div>
+                    @if($cart->discount > 0)
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Diskon</span>
+                        <span class="text-danger">- Rp {{ number_format($cart->discount, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
                     <hr>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="fw-bold">Total</span>
-                        <span class="fw-bold text-success" id="total">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                        <span class="fw-bold text-success" id="total">Rp {{ number_format($totalPrice, 0, ',', '.') }}</span>
                     </div>
                     
                     <form id="checkoutForm" action="{{ route('checkout.index') }}" method="GET">
@@ -155,19 +161,18 @@
 $(document).ready(function() {
 
     function updateSummary() {
-        let total = 0;
+        let subtotal = 0;
         $('.product-checkbox:checked').each(function() {
             const price = parseFloat($(this).data('price'));
             const amount = parseInt($(this).data('amount'));
-            total += price * amount;
+            subtotal += price * amount;
         });
-        if (total > 0) {
-            $('#subtotal').text('Rp ' + total.toLocaleString('id-ID'));
-            $('#total').text('Rp ' + total.toLocaleString('id-ID'));
-        } else {
-            $('#subtotal').text('Rp 0');
-            $('#total').text('Rp 0');
-        }
+        
+        const discount = {{ $cart->discount ?? 0 }};
+        const total = subtotal - discount;
+        
+        $('#subtotal').text('Rp ' + subtotal.toLocaleString('id-ID'));
+        $('#total').text('Rp ' + total.toLocaleString('id-ID'));
     }
 
     // Event untuk tombol plus dan minus
@@ -200,26 +205,31 @@ $(document).ready(function() {
 
         input.trigger('change');
     });
+
     $('#checkoutForm').on('submit', function(e) {
-    // Ambil semua checkbox yang dicentang
-    let selectedIds = [];
-    $('.product-checkbox:checked').each(function() {
-        selectedIds.push($(this).data('id'));
-    });
-    // Jika tidak ada produk yang dipilih, batalkan submit dan beri alert
-    if (selectedIds.length === 0) {
-        e.preventDefault();
-        alert('Pilih minimal 1 produk untuk melanjutkan pembayaran.');
-        return false;
-    }
-    // Set value input hidden dengan string list id, misal "1,2,3"
-    $('#selectedProductsInput').val(selectedIds.join(','));
+        // Ambil semua checkbox yang dicentang
+        let selectedIds = [];
+        $('.product-checkbox:checked').each(function() {
+            selectedIds.push($(this).data('id'));
+        });
+        // Jika tidak ada produk yang dipilih, batalkan submit dan beri alert
+        if (selectedIds.length === 0) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan',
+                text: 'Pilih minimal 1 produk untuk melanjutkan pembayaran.'
+            });
+            return false;
+        }
+        // Set value input hidden dengan string list id
+        $('#selectedProductsInput').val(selectedIds.join(','));
     });
 
     // Event saat jumlah diubah
     $(document).on('change', '.amount-input', function() {
         const input = $(this);
-        const productId = input.data('id');
+        const itemId = input.data('id');
         let newQuantity = parseInt(input.val()) || 1;
         const maxStock = parseInt(input.data('max'));
         const price = parseFloat(input.data('price'));
@@ -238,40 +248,36 @@ $(document).ready(function() {
         }
 
         const newTotal = price * newQuantity;
-        $('#totalPrice' + productId).text('Rp ' + newTotal.toLocaleString('id-ID'));
+        $('#totalPrice' + itemId).text('Rp ' + newTotal.toLocaleString('id-ID'));
 
-        // Update data-amount di checkbox terkait supaya update summary tepat
+        // Update data-amount di checkbox terkait
         const checkbox = input.closest('.list-group-item').find('.product-checkbox');
         if (checkbox.length) {
             checkbox.data('amount', newQuantity);
+            checkbox.attr('data-amount', newQuantity);
         }
 
         $.ajax({
-            url: "{{ url('cart/update') }}/" + productId,
+            url: "{{ url('cart/update') }}/" + itemId,
             method: 'PATCH',
             data: {
                 amount: newQuantity,
                 _token: "{{ csrf_token() }}"
             },
             success: function(response) {
-                $('#totalPrice' + productId).text('Rp ' + response.total);
+                $('#totalPrice' + itemId).text('Rp ' + response.subtotal.toLocaleString('id-ID'));
                 if (response.cart_count) {
                     $('.cart-count').text(response.cart_count);
                     $('.badge.rounded-pill').text(response.cart_count + ' item');
                 }
-                if (response.subtotal) {
-                    // Jangan langsung update subtotal dan total dari server
-                    // karena kita ingin update berdasarkan checkbox yg dicentang
-                    // Jadi panggil updateSummary() saja
-                }
+                
+                // Update ringkasan belanja
+                updateSummary();
 
                 Toast.fire({
                     icon: 'success',
                     title: response.message || 'Jumlah berhasil diupdate'
                 });
-
-                // Update ringkasan belanja
-                updateSummary();
             },
             error: function(xhr) {
                 if (xhr.status === 400) {
@@ -282,7 +288,7 @@ $(document).ready(function() {
                         text: response.message || 'Terjadi kesalahan',
                     });
                     input.val(response.max_stock || 1);
-                    $('#totalPrice' + productId).text('Rp ' + (price * (response.max_stock || 1)).toLocaleString('id-ID'));
+                    $('#totalPrice' + itemId).text('Rp ' + (price * (response.max_stock || 1)).toLocaleString('id-ID'));
                 }
             }
         });

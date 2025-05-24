@@ -16,15 +16,6 @@
     <form action="{{ route('admin.sales.update', $sale->sales_id) }}" method="POST">
         @csrf
         @method('PUT')
-
-        <div class="mb-3">
-            <label for="discount_type" class="form-label">Tipe Diskon</label>
-            <select name="discount_type" id="discount_type" class="form-control">
-                <option value="percentage" {{ $sale->discount_type == 'percentage' ? 'selected' : '' }}>Persentase</option>
-                <option value="fixed" {{ $sale->discount_type == 'fixed' ? 'selected' : '' }}>Tetap (Rp)</option>
-            </select>
-        </div>
-
         <div class="mb-3">
             <label for="discount_value" class="form-label">Nilai Diskon</label>
             <input type="number" name="discount_value" id="discount_value" class="form-control" value="{{ $sale->discount_value }}">

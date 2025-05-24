@@ -10,20 +10,16 @@ class CancelExpiredOrders extends Command
 {
     protected $signature = 'orders:cancel-expired';
 
-    protected $description = 'Batalkan order yang belum dibayar dan sudah lewat 1 hari';
+    protected $description = 'Batalkan order yang belum dibayar dan sudah lewat waktu expired';
 
     public function handle()
     {
-        $expiredOrders = Order::where('order_status', 'Belum Bayar')
+        $updatedCount = Order::where('order_status', 'Belum Bayar')
+            ->whereNotNull('expires_at')
             ->where('expires_at', '<', Carbon::now())
-            ->get();
+            ->update(['order_status' => 'Dibatalkan']);
 
-        foreach ($expiredOrders as $order) {
-            $order->order_status = 'Dibatalkan';
-            $order->save();
-
-            $this->info("Order {$order->order_id} dibatalkan.");
-        }
+        $this->info("$updatedCount order dibatalkan.");
 
         return 0;
     }

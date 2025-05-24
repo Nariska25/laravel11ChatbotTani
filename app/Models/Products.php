@@ -54,20 +54,18 @@ class Products extends Model
         public function orders() {
             return $this->hasMany(Order::class);
         }
-        
-
-
-        // Hitung harga setelah diskon
+    
+        public function activeSale()
+        {
+            return $this->hasOne(Sale::class, 'products_id', 'products_id')->where('status', 'active')->latest();
+        }
+    
         public function getDiscountedPriceAttribute()
         {
-            $sale = $this->sale; // Mengambil satu data sale terbaru
-            if ($sale && $sale->status == 'active') {
-                if ($sale->discount_type == 'percentage') {
-                    return $this->price - ($this->price * ($sale->discount_value / 100));
-                } elseif ($sale->discount_type == 'fixed') {
-                    return max(0, $this->price - $sale->discount_value);
-                }
+            $sale = $this->activeSale;
+            if ($sale) {
+                return max(0, $this->price - $sale->discount_value);
             }
-            return $this->price; // Harga normal jika tidak ada sale
+            return $this->price;
         }
 }

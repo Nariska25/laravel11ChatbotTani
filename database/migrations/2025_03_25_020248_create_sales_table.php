@@ -11,7 +11,6 @@ return new class extends Migration {
             $table->id('sales_id'); // Auto-increment primary key
             $table->unsignedBigInteger('products_id'); 
             $table->foreign('products_id')->references('products_id')->on('products')->onDelete('cascade');
-            $table->enum('discount_type', ['percentage', 'fixed']);
             $table->decimal('discount_value', 10, 2);
             $table->dateTime('start_date');
             $table->dateTime('end_date');

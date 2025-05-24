@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <!-- Shipping Address Section -->
             <div class="card mb-4">
-                <div class="card-header bg-success  text-white">
+                <div class="card-header bg-success text-white">
                     <h5 class="mb-0">Shipping Address</h5>
                 </div>
                 <div class="card-body">
@@ -25,13 +25,13 @@
                     </div>
                     <a href="{{ route('profile.editalamat', ['redirect' => route('checkout.index', ['selected_products' => request('selected_products')])]) }}" class="btn btn-sm btn-primary">
                         Edit Alamat
-                    </a>                                                                  
+                    </a>                                                                      
                 </div>
             </div>
 
             <!-- Shipping Method Section -->
             <div class="card mb-4">
-                <div class="card-header bg-success  text-white">
+                <div class="card-header bg-success text-white">
                     <h5 class="mb-0">Shipping Method</h5>
                 </div>
                 <div class="card-body">
@@ -45,7 +45,7 @@
                                     <option 
                                         value="{{ $method->shipping_methods_id }}"
                                         data-cost="{{ $method->cost }}"
-                                        data-name="{{ $method->courier_service }}"
+                                        data-name="{{ $method->courier }} - {{ $method->courier_service }}"
                                     >
                                         {{ strtoupper($method->courier) }} - {{ $method->courier_service }} 
                                         (Rp {{ number_format($method->cost, 0, ',', '.') }})
@@ -62,7 +62,7 @@
 
             <!-- Payment Method Section -->
             <div class="card mb-4">
-                <div class="card-header bg-success  text-white">
+                <div class="card-header bg-success text-white">
                     <h5 class="mb-0">Payment Method</h5>
                 </div>
                 <div class="card-body">
@@ -85,7 +85,7 @@
         <div class="col-md-4">
             <!-- Order Summary -->
             <div class="card mb-4 sticky-top" style="top: 20px;">
-                <div class="card-header bg-success  text-white">
+                <div class="card-header bg-success text-white">
                     <h5 class="mb-0">Order Summary</h5>
                 </div>
                 <div class="card-body">
@@ -100,13 +100,13 @@
                         <span class="text-muted">Rp {{ number_format($item->product->price * $item->amount, 0, ',', '.') }}</span>
                     </div>
                     @endforeach
-                    
+            
                     <!-- Voucher Section -->
                     <div class="pt-3">
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="voucherCode" placeholder="Voucher code">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-success " type="button" id="applyVoucherBtn">
+                                <button class="btn btn-outline-success" type="button" id="applyVoucherBtn">
                                     Apply
                                 </button>
                             </div>
@@ -144,12 +144,14 @@
                         <input type="hidden" name="shipping_service" id="shippingServiceInput">
                         <input type="hidden" name="voucher_code" id="voucherCodeInput">
                         <input type="hidden" name="voucher_discount" id="voucherDiscountInput">
+                        <input type="hidden" name="voucher_id" id="voucherIdInput">
                         <input type="hidden" name="payment_method" value="xendit">
-                    
+                        <input type="hidden" name="selected_items" value="{{ request('selected_products') }}">
+                        
                         <button type="submit" class="btn btn-success btn-block mt-4 py-2" id="placeOrderBtn">
                             <i class="fas fa-shopping-bag mr-2"></i> Checkout
                         </button>
-                    </form>                                  
+                    </form>                               
                 </div>
             </div>
         </div>
@@ -157,67 +159,74 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-(function () {
-    document.addEventListener("DOMContentLoaded", function () {
-        const shippingSelect = document.getElementById("shipping_method");
-        const shippingCostDisplay = document.getElementById("shippingCostDisplay");
-        const totalPaymentDisplay = document.getElementById("totalPaymentDisplay");
-        const discountDisplay = document.getElementById("discountDisplay");
-        const shippingServiceLabel = document.getElementById("shippingServiceLabel");
+document.addEventListener("DOMContentLoaded", function () {
+    // Deklarasi semua elemen yang diperlukan
+    const shippingSelect = document.getElementById("shipping_method");
+    const shippingCostDisplay = document.getElementById("shippingCostDisplay");
+    const totalPaymentDisplay = document.getElementById("totalPaymentDisplay");
+    const discountDisplay = document.getElementById("discountDisplay");
+    const shippingServiceLabel = document.getElementById("shippingServiceLabel");
+    const shippingMethodInput = document.getElementById("shippingMethodInput");
+    const shippingCostInput = document.getElementById("shippingCostInput");
+    const shippingServiceInput = document.getElementById("shippingServiceInput");
+    const voucherDiscountInput = document.getElementById("voucherDiscountInput");
+    const voucherCodeHiddenInput = document.getElementById("voucherCodeInput");
+    const applyVoucherBtn = document.getElementById("applyVoucherBtn");
+    const voucherCodeInput = document.getElementById("voucherCode");
+    const voucherMessage = document.getElementById("voucherMessage");
+    const checkoutForm = document.getElementById("checkoutForm");
 
-        const shippingMethodInput = document.getElementById("shippingMethodInput");
-        const shippingCostInput = document.getElementById("shippingCostInput");
-        const shippingServiceInput = document.getElementById("shippingServiceInput");
-        const voucherDiscountInput = document.getElementById("voucherDiscountInput");
-        const voucherCodeHiddenInput = document.getElementById("voucherCodeInput");
+    // Jika elemen tidak ditemukan, keluar dari fungsi
+    if (!shippingSelect || !checkoutForm) {
+        console.error("Required elements not found");
+        return;
+    }
 
-        const applyVoucherBtn = document.getElementById("applyVoucherBtn");
-        const voucherCodeInput = document.getElementById("voucherCode");
-        const voucherMessage = document.getElementById("voucherMessage");
+    function toNumber(str) {
+        return parseFloat(str.toString().replace(/[^\d.-]/g, '')) || 0;
+    }
 
-        function toNumber(str) {
-            return parseFloat(str.toString().replace(/[^\d.-]/g, '')) || 0;
-        }
+    const subtotal = toNumber("{{ $subtotal }}");
+    let shippingCost = 0;
+    let discountAmount = 0;
 
-        const subtotal = toNumber("{{ $subtotal }}");
-        let shippingCost = 0;
-        let discountAmount = 0;
+    function formatRupiah(amount) {
+        return 'Rp ' + amount.toLocaleString('id-ID');
+    }
 
-        function formatRupiah(amount) {
-            return 'Rp ' + amount.toLocaleString('id-ID');
-        }
+    function updateTotal() {
+        const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
 
-        function updateTotal() {
-            const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
-
-            if (selectedOption && selectedOption.value !== "") {
-                shippingCost = toNumber(selectedOption.dataset.cost);
-                shippingMethodInput.value = selectedOption.value;
-                shippingCostInput.value = shippingCost;
-                shippingServiceInput.value = selectedOption.dataset.name;
-                if (shippingServiceLabel) {
-                    shippingServiceLabel.textContent = selectedOption.dataset.name;
-                }
-            } else {
-                shippingCost = 0;
-                shippingMethodInput.value = "";
-                shippingCostInput.value = 0;
-                shippingServiceInput.value = "";
-                if (shippingServiceLabel) {
-                    shippingServiceLabel.textContent = "-";
-                }
+        if (selectedOption && selectedOption.value !== "") {
+            shippingCost = toNumber(selectedOption.dataset.cost);
+            if (shippingMethodInput) shippingMethodInput.value = selectedOption.value;
+            if (shippingCostInput) shippingCostInput.value = shippingCost;
+            if (shippingServiceInput) shippingServiceInput.value = selectedOption.dataset.name;
+            if (shippingServiceLabel) {
+                shippingServiceLabel.textContent = selectedOption.dataset.name;
             }
-
-            const total = subtotal + shippingCost - discountAmount;
-
-            shippingCostDisplay.textContent = formatRupiah(shippingCost);
-            discountDisplay.textContent = '-' + formatRupiah(discountAmount);
-            totalPaymentDisplay.textContent = formatRupiah(total);
+        } else {
+            shippingCost = 0;
+            if (shippingMethodInput) shippingMethodInput.value = "";
+            if (shippingCostInput) shippingCostInput.value = 0;
+            if (shippingServiceInput) shippingServiceInput.value = "";
+            if (shippingServiceLabel) {
+                shippingServiceLabel.textContent = "-";
+            }
         }
 
-        applyVoucherBtn?.addEventListener("click", function () {
+        const total = subtotal + shippingCost - discountAmount;
+
+        if (shippingCostDisplay) shippingCostDisplay.textContent = formatRupiah(shippingCost);
+        if (discountDisplay) discountDisplay.textContent = '-' + formatRupiah(discountAmount);
+        if (totalPaymentDisplay) totalPaymentDisplay.textContent = formatRupiah(total);
+    }
+
+    // Tambahkan event listener hanya jika elemen ada
+    if (applyVoucherBtn && voucherCodeInput && voucherMessage) {
+        applyVoucherBtn.addEventListener("click", function () {
             const voucherCode = voucherCodeInput.value.trim();
             if (!voucherCode) {
                 voucherMessage.innerHTML = '<div class="alert alert-danger p-2">Please enter a voucher code</div>';
@@ -237,13 +246,17 @@
                     if (data.success) {
                         voucherMessage.innerHTML = '<div class="alert alert-success p-2">' + data.message + '</div>';
                         discountAmount = toNumber(data.discount);
-                        voucherDiscountInput.value = discountAmount;
-                        voucherCodeHiddenInput.value = data.voucher_code;
+                        if (voucherDiscountInput) voucherDiscountInput.value = discountAmount;
+                        if (voucherCodeHiddenInput) voucherCodeHiddenInput.value = data.voucher_code;
+                        const voucherIdInput = document.getElementById('voucherIdInput');
+                        if (voucherIdInput) voucherIdInput.value = data.voucher_id;
                     } else {
                         voucherMessage.innerHTML = '<div class="alert alert-danger p-2">' + data.error + '</div>';
                         discountAmount = 0;
-                        voucherDiscountInput.value = 0;
-                        voucherCodeHiddenInput.value = '';
+                        if (voucherDiscountInput) voucherDiscountInput.value = 0;
+                        if (voucherCodeHiddenInput) voucherCodeHiddenInput.value = '';
+                        const voucherIdInput = document.getElementById('voucherIdInput');
+                        if (voucherIdInput) voucherIdInput.value = '';
                     }
                     updateTotal();
                 })
@@ -252,24 +265,27 @@
                     console.error('Voucher Error:', error);
                 });
         });
+    }
 
+    if (shippingSelect) {
         shippingSelect.addEventListener("change", updateTotal);
-        
-        // Form validation before submitting
-        const checkoutForm = document.getElementById("checkoutForm");
+    }
+
+    if (checkoutForm) {
         checkoutForm.addEventListener("submit", function (event) {
             const selectedShippingMethod = shippingSelect.value;
 
             if (!selectedShippingMethod) {
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault();
                 alert("Please select a shipping method first!");
             } else {
                 updateTotal();
             }
         });
+    }
 
-        updateTotal();
-    });
-})();
-
+    // Inisialisasi nilai awal
+    updateTotal();
+});
 </script>
+@endpush

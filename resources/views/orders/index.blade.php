@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    @if($orders->isEmpty())
+    @if($orders->count() === 0)
         <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body text-center py-5">
                 <div class="mb-4">
@@ -28,75 +28,97 @@
     @else
         <div class="row g-4">
             @foreach($orders as $order)
-                @php
-                    $bgClass = match($order->order_status) {
-                        'dibatalkan' => 'bg-success bg-opacity-10',
-                        'selesai' => 'bg-primary bg-opacity-10',
-                        'dikirim' => 'bg-danger bg-opacity-10',
-                        'sedang dikemas' => 'bg-warning bg-opacity-10',
-                        'telah dibayar' => 'bg-info bg-opacity-10',
-                        'belum bayar' => 'bg-secondary bg-opacity-10',
-                        default => 'bg-light',
-                    };
-                @endphp
+            @php
+                $status = strtolower($order->order_status);
+                $isExpired = $status === 'belum bayar' && $order->expires_at && now()->greaterThan(\Carbon\Carbon::parse($order->expires_at));
 
-                <div class="col-md-6 col-lg-4">
-                    <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden">
-                        <div class="card-header bg-white border-bottom px-4 py-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="mb-0 fw-medium">Order #{{ $order->order_id }}</h5>
-                                <span class="badge {{ $bgClass }} text-dark text-capitalize rounded-pill px-3 py-1">
-                                    {{ str_replace('_', ' ', $order->order_status) }}
-                                </span>
-                            </div>
-                            <small class="text-muted">
-                                {{ $order->created_at->format('d M Y h:i A') }}
-                            </small>
+                if ($isExpired) {
+                    $status = 'expired';
+                }
+
+                $bgClass = match($status) {
+                    'dibatalkan' => 'bg-danger bg-opacity-10',
+                    'selesai' => 'bg-primary bg-opacity-10',
+                    'dikirim' => 'bg-info bg-opacity-10',
+                    'sedang dikemas' => 'bg-warning bg-opacity-10',
+                    'telah dibayar' => 'bg-success bg-opacity-10',
+                    'belum bayar' => 'bg-secondary bg-opacity-10',
+                    'expired' => 'bg-dark bg-opacity-10',
+                    default => 'bg-light',
+                };
+            @endphp
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-3 overflow-hidden">
+                    <div class="card-header bg-white border-bottom px-4 py-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0 fw-medium">Order #{{ $order->order_id }}</h5>
+                            <span class="badge {{ $bgClass }} text-dark text-capitalize rounded-pill px-3 py-1">
+                                {{ $isExpired ? 'Expired' : ucfirst($order->order_status) }}
+                            </span>
                         </div>
+                        <small class="text-muted">
+                            {{ $order->created_at->timezone('Asia/Jakarta')->format('d M Y h:i A') }}
+                        </small>
+                    </div>
+                
+                    <div class="card-body">
 
-                        <div class="card-body px-4 py-3">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted">Est. Delivery:</span>
-                                <span class="fw-medium">
-                                    @if(\Carbon\Carbon::hasFormat($order->delivery_estimate, 'Y-m-d'))
-                                        {{ \Carbon\Carbon::parse($order->delivery_estimate)->format('d M Y') }}
+                        <!-- Tampilkan expired jika status 'Belum Bayar' dan waktu telah habis -->
+                        @if(strtolower($order->order_status) === 'belum bayar' && $order->expires_at && now()->lessThan(\Carbon\Carbon::parse($order->expires_at)))
+                            <div class="mb-3 text-danger fw-semibold">
+                                Harap bayar sebelum: {{ \Carbon\Carbon::parse($order->expires_at)->timezone('Asia/Jakarta')->format('d M Y H:i') }}
+                            </div>
+                        @endif
+                        <!-- Shipping Info Section -->
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-1">
+                                @if($order->shippingMethod)
+                                    <i class="fas fa-truck-moving text-danger me-2"></i>
+                                    <span class="fw-medium">{{ $order->shippingMethod->courier }}</span>
+                                @else
+                                    <span class="text-muted">Belum memilih kurir</span>
+                                @endif
+                            </div>
+                            
+                            <div class="d-flex align-items-center text-muted small">
+                                <span class="me-1">Est. Delivery:</span>
+                                <span>
+                                    @if($order->shippingMethod)
+                                        {{ $order->shippingMethod->delivery_estimate }}
                                     @else
-                                        {{ $order->delivery_estimate }}
+                                        1-3 hari
                                     @endif
                                 </span>
                             </div>
-
-                            <div class="border-top border-bottom py-3 my-3">
-                                <div class="d-flex align-items-center mb-2 small text-muted">
-                                    <i class="fas fa-shipping-fast me-1"></i> {{ $order->courier }}
-                                    <span class="mx-2">•</span>
-                                    <i class="fas fa-credit-card me-1"></i> {{ $order->payment_method }}
-                                </div>
-                                @if($order->items->isNotEmpty())
-                                    <h6 class="mb-1 fw-medium text-truncate">{{ $order->items[0]->products_name }}</h6>
-                                    <p class="text-muted small mb-0">
-                                        @if($order->items->count() > 1)
-                                            +{{ $order->items->count() - 1 }} other items • {{ $order->items->sum('amount') }} total
-                                        @else
-                                            {{ $order->items->sum('amount') }} item
-                                        @endif
-                                    </p>
-                                @endif
+                        </div>
+                    
+                        <!-- Product Info -->
+                        @if($order->items->isNotEmpty())
+                            <div class="border-top pt-2 mb-3">
+                                <h6 class="mb-1 fw-medium">{{ $order->items[0]->product->products_name }}</h6>
+                                <p class="text-muted small mb-0">
+                                    {{ $order->items->sum('amount') }} item
+                                    @if($order->items->count() > 1)
+                                        • {{ $order->items->count() }} produk
+                                    @endif
+                                </p>
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small">Total</span>
-                                    <h5 class="mb-0 fw-bold">Rp {{ number_format($order->total_payment, 0, ',', '.') }}</h5>
-                                </div>
-                                <a href="{{ route('orders.show', $order->order_id) }}" class="btn btn-sm btn-success rounded-pill px-3">
-                                    Details <i class="fas fa-chevron-right ms-1"></i>
-                                </a>                                
+                        @endif
+                    
+                        <!-- Total and Details -->
+                        <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                            <div>
+                                <span class="text-muted small">Total</span>
+                                <h5 class="mb-0 fw-bold">Rp {{ number_format($order->total_payment, 0, ',', '.') }}</h5>
                             </div>
+                            <a href="{{ route('orders.show', $order->order_id) }}" class="btn btn-sm btn-success rounded-pill px-3">
+                                Details <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
-            @endforeach
+            </div>
+        @endforeach
         </div>
 
         <!-- Pagination -->
@@ -109,7 +131,7 @@
 </div>
 
 <style>
- .pagination {
+    .pagination {
         display: flex;
         flex-wrap: nowrap;
         overflow-x: auto;
@@ -120,23 +142,23 @@
         flex-shrink: 0;
     }
 
-.pagination .page-link {
-    border-radius: 50px;
-    padding: 0.375rem 0.75rem;
-    font-size: 0.9rem;
-    margin: 0 2px;
-    color: #198754; /* Bootstrap green */
-    border: 1px solid #dee2e6;
-}
+    .pagination .page-link {
+        border-radius: 50px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.9rem;
+        margin: 0 2px;
+        color: #198754;
+        border: 1px solid #dee2e6;
+    }
 
-.pagination .page-item.active .page-link {
-    background-color: #198754;
-    border-color: #198754;
-    color: #fff;
-}
+    .pagination .page-item.active .page-link {
+        background-color: #198754;
+        border-color: #198754;
+        color: #fff;
+    }
 
-.pagination .page-item.disabled .page-link {
-    color: #ccc;
-}
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;
+    }
 </style>
 @endsection

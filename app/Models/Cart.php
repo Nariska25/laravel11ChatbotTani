@@ -13,24 +13,25 @@ class Cart extends Model
     protected $primaryKey = 'carts_id';
     public $incrementing = true;
     protected $keyType = 'int';
-    protected $fillable = ['user_id', 'products_id', 'amount', 'price', 'discount', 'subtotal', 'total'];
 
-    // Add these accessors
-    protected $appends = ['total'];
-    
-    public function product()
-    {
-        return $this->belongsTo(Products::class, 'products_id');
-    }
+    // Hapus products_id karena sudah tidak ada di tabel carts
+    protected $fillable = ['user_id', 'discount', 'total'];
 
+    // Relasi ke user
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Calculate total automatically
+    // Relasi ke semua detail dari cart
+    public function cartDetails()
+    {
+        return $this->hasMany(CartDetail::class, 'carts_id', 'carts_id');
+    }
+ 
+    // Accessor opsional: menghitung total dari semua subtotal detail
     public function getTotalAttribute()
     {
-        return ($this->amount * $this->price) - ($this->amount * $this->discount);
+        return $this->details->sum('subtotal') - $this->discount;
     }
 }

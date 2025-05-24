@@ -15,23 +15,14 @@ return new class extends Migration {
             $table->unsignedBigInteger('user_id'); // Foreign key ke users
             $table->unsignedBigInteger('shipping_methods_id')->nullable(); // FK ke shipping_methods
             $table->unsignedBigInteger('vouchers_id')->nullable(); // FK ke vouchers
-
             $table->enum('order_status', ['Belum Bayar', 'Telah Dibayar', 'Sedang Dikemas', 'Dikirim', 'Selesai', 'Dibatalkan'])->default('Belum Bayar');
-
-            $table->decimal('subtotal', 10, 2);
             $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('shipping_cost', 10, 2);
             $table->decimal('total_payment', 10, 2);
-
-            $table->string('courier', 50);
-            $table->string('courier_service', 50);
-            $table->string('delivery_estimate', 50);
-
-            $table->text('shipping_address');
-
             $table->string('xendit_invoice_id')->nullable();
             $table->string('xendit_payment_url', 255)->nullable();
             $table->string('external_id')->nullable();
+            $table->timestamp('expires_at')->nullable();
 
             $table->timestamps();
 

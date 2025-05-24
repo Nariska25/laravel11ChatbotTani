@@ -88,12 +88,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{id}', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/remove/{cartId}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::delete('/cart/remove/{detailId}', [CartController::class, 'remove'])->name('cart.remove');
 });
     
 // checkout 
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
     Route::post('/checkout/apply-voucher', [CheckoutController::class, 'applyVoucher'])->name('checkout.applyVoucher');
 });
@@ -103,7 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrdersController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [OrdersController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/cancel', [OrdersController::class, 'cancel'])->name('orders.cancel');
-    Route::get('/orders/{id}/pay', [OrdersController::class, 'pay'])->name('orders.pay');
+    Route::post('/orders/{order}/pay', [OrdersController::class, 'pay'])->name('orders.pay');
 });
 
 

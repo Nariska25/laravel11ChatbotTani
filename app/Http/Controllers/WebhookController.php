@@ -32,7 +32,9 @@ class WebhookController extends Controller
         if ($order) {
             if ($status === 'PAID') {
                 $order->order_status = 'Telah Dibayar';
+                $order->expires_at = null;
                 $order->save();
+                Log::info("Setelah update: expires_at = " . $order->expires_at);
     
                 // Kurangi stok untuk setiap item dalam pesanan
                 foreach ($order->items as $item) {

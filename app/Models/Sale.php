@@ -12,8 +12,8 @@ class Sale extends Model
     protected $primaryKey = 'sales_id';
     
     protected $fillable = [
-        'products_id', 'discount_type', 'discount_value', 
-        'start_date', 'end_date', 'status'
+        'products_id', 'discount_value', 
+        'start_date', 'end_date', 'status',
     ];
 
     public function products()
