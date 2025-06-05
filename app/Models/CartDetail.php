@@ -16,6 +16,7 @@ class CartDetail extends Model
     protected $fillable = [
         'carts_id',
         'products_id',
+        'discount',
         'amount',
         'subtotal',
     ];

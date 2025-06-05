@@ -103,20 +103,41 @@
             
                     <!-- Voucher Section -->
                     <div class="pt-3">
+                        @if($vouchers->count())
+                        <div class="mb-3">
+                            <label class="font-weight-bold">Voucher Tersedia:</label>
+                            <div class="row">
+                                @foreach($vouchers as $voucher)
+                                <div class="col-12 mb-2">
+                                    <div class="border rounded p-2 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ $voucher->promotion_code }}</strong><br>
+                                            <small>Diskon: Rp {{ number_format($voucher->discount, 0, ',', '.') }}</small>
+                                            @if($voucher->minimum_purchase)
+                                            <br><small class="text-muted">Min. pembelian: Rp {{ number_format($voucher->minimum_purchase, 0, ',', '.') }}</small>
+                                            @endif
+                                        </div>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-sm btn-outline-success apply-voucher-btn" 
+                                            data-code="{{ $voucher->promotion_code }}"
+                                        >
+                                            Gunakan
+                                        </button>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
                         <div class="input-group mb-3">
                             <input type="text" class="form-control" id="voucherCode" placeholder="Voucher code">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-success" type="button" id="applyVoucherBtn">
-                                    Apply
-                                </button>
-                            </div>
                         </div>
                         <div id="voucherMessage" class="small"></div>
                     </div>
-                    
                     <hr>
                     
-                    <!-- Payment Summary -->
                     <div class="mb-2">
                         <div class="d-flex justify-content-between">
                             <span>Subtotal</span>
@@ -160,9 +181,9 @@
 @endsection
 
 @push('scripts')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Deklarasi semua elemen yang diperlukan
     const shippingSelect = document.getElementById("shipping_method");
     const shippingCostDisplay = document.getElementById("shippingCostDisplay");
     const totalPaymentDisplay = document.getElementById("totalPaymentDisplay");
@@ -172,25 +193,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const shippingCostInput = document.getElementById("shippingCostInput");
     const shippingServiceInput = document.getElementById("shippingServiceInput");
     const voucherDiscountInput = document.getElementById("voucherDiscountInput");
-    const voucherCodeHiddenInput = document.getElementById("voucherCodeInput");
-    const applyVoucherBtn = document.getElementById("applyVoucherBtn");
     const voucherCodeInput = document.getElementById("voucherCode");
+    const voucherCodeHiddenInput = document.getElementById("voucherCodeInput");
     const voucherMessage = document.getElementById("voucherMessage");
     const checkoutForm = document.getElementById("checkoutForm");
+    const voucherIdInput = document.getElementById("voucherIdInput");
 
-    // Jika elemen tidak ditemukan, keluar dari fungsi
-    if (!shippingSelect || !checkoutForm) {
-        console.error("Required elements not found");
-        return;
-    }
+    const subtotal = parseFloat("{{ $subtotal }}") || 0;
+    let shippingCost = 0;
+    let discountAmount = 0;
 
     function toNumber(str) {
         return parseFloat(str.toString().replace(/[^\d.-]/g, '')) || 0;
     }
-
-    const subtotal = toNumber("{{ $subtotal }}");
-    let shippingCost = 0;
-    let discountAmount = 0;
 
     function formatRupiah(amount) {
         return 'Rp ' + amount.toLocaleString('id-ID');
@@ -198,94 +213,85 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateTotal() {
         const selectedOption = shippingSelect.options[shippingSelect.selectedIndex];
-
         if (selectedOption && selectedOption.value !== "") {
             shippingCost = toNumber(selectedOption.dataset.cost);
-            if (shippingMethodInput) shippingMethodInput.value = selectedOption.value;
-            if (shippingCostInput) shippingCostInput.value = shippingCost;
-            if (shippingServiceInput) shippingServiceInput.value = selectedOption.dataset.name;
-            if (shippingServiceLabel) {
-                shippingServiceLabel.textContent = selectedOption.dataset.name;
-            }
+            shippingMethodInput.value = selectedOption.value;
+            shippingCostInput.value = shippingCost;
+            shippingServiceInput.value = selectedOption.dataset.name;
+            shippingServiceLabel.textContent = selectedOption.dataset.name;
         } else {
             shippingCost = 0;
-            if (shippingMethodInput) shippingMethodInput.value = "";
-            if (shippingCostInput) shippingCostInput.value = 0;
-            if (shippingServiceInput) shippingServiceInput.value = "";
-            if (shippingServiceLabel) {
-                shippingServiceLabel.textContent = "-";
-            }
+            shippingMethodInput.value = "";
+            shippingCostInput.value = 0;
+            shippingServiceInput.value = "";
+            shippingServiceLabel.textContent = "-";
         }
 
         const total = subtotal + shippingCost - discountAmount;
-
-        if (shippingCostDisplay) shippingCostDisplay.textContent = formatRupiah(shippingCost);
-        if (discountDisplay) discountDisplay.textContent = '-' + formatRupiah(discountAmount);
-        if (totalPaymentDisplay) totalPaymentDisplay.textContent = formatRupiah(total);
+        shippingCostDisplay.textContent = formatRupiah(shippingCost);
+        discountDisplay.textContent = '-' + formatRupiah(discountAmount);
+        totalPaymentDisplay.textContent = formatRupiah(total);
     }
 
-    // Tambahkan event listener hanya jika elemen ada
-    if (applyVoucherBtn && voucherCodeInput && voucherMessage) {
-        applyVoucherBtn.addEventListener("click", function () {
-            const voucherCode = voucherCodeInput.value.trim();
-            if (!voucherCode) {
-                voucherMessage.innerHTML = '<div class="alert alert-danger p-2">Please enter a voucher code</div>';
-                return;
-            }
+    function applyVoucher(code) {
+        if (!code) {
+            voucherMessage.innerHTML = '<div class="alert alert-danger p-2">Please enter a voucher code</div>';
+            return;
+        }
 
-            fetch("{{ route('checkout.applyVoucher') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({ code: voucherCode })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        voucherMessage.innerHTML = '<div class="alert alert-success p-2">' + data.message + '</div>';
-                        discountAmount = toNumber(data.discount);
-                        if (voucherDiscountInput) voucherDiscountInput.value = discountAmount;
-                        if (voucherCodeHiddenInput) voucherCodeHiddenInput.value = data.voucher_code;
-                        const voucherIdInput = document.getElementById('voucherIdInput');
-                        if (voucherIdInput) voucherIdInput.value = data.voucher_id;
-                    } else {
-                        voucherMessage.innerHTML = '<div class="alert alert-danger p-2">' + data.error + '</div>';
-                        discountAmount = 0;
-                        if (voucherDiscountInput) voucherDiscountInput.value = 0;
-                        if (voucherCodeHiddenInput) voucherCodeHiddenInput.value = '';
-                        const voucherIdInput = document.getElementById('voucherIdInput');
-                        if (voucherIdInput) voucherIdInput.value = '';
-                    }
-                    updateTotal();
-                })
-                .catch(error => {
-                    voucherMessage.innerHTML = '<div class="alert alert-danger p-2">Error applying voucher</div>';
-                    console.error('Voucher Error:', error);
-                });
-        });
-    }
-
-    if (shippingSelect) {
-        shippingSelect.addEventListener("change", updateTotal);
-    }
-
-    if (checkoutForm) {
-        checkoutForm.addEventListener("submit", function (event) {
-            const selectedShippingMethod = shippingSelect.value;
-
-            if (!selectedShippingMethod) {
-                event.preventDefault();
-                alert("Please select a shipping method first!");
+        fetch("{{ route('checkout.applyVoucher') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ code: code })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                voucherMessage.innerHTML = '<div class="alert alert-success p-2">' + data.message + '</div>';
+                discountAmount = toNumber(data.discount);
+                voucherDiscountInput.value = discountAmount;
+                voucherCodeHiddenInput.value = data.voucher_code;
+                voucherIdInput.value = data.voucher_id;
             } else {
-                updateTotal();
+                voucherMessage.innerHTML = '<div class="alert alert-danger p-2">' + data.error + '</div>';
+                discountAmount = 0;
+                voucherDiscountInput.value = 0;
+                voucherCodeHiddenInput.value = '';
+                voucherIdInput.value = '';
             }
+            updateTotal();
+        })
+        .catch(error => {
+            voucherMessage.innerHTML = '<div class="alert alert-danger p-2">Error applying voucher</div>';
+            console.error('Voucher Error:', error);
         });
     }
 
-    // Inisialisasi nilai awal
+    document.querySelectorAll(".apply-voucher-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const code = this.dataset.code;
+            voucherCodeInput.value = code;
+            applyVoucher(code);
+        });
+    });
+
+    shippingSelect.addEventListener("change", updateTotal);
+
+    checkoutForm.addEventListener("submit", function (event) {
+        if (!shippingSelect.value) {
+            event.preventDefault();
+            alert("Please select a shipping method first!");
+        } else {
+            updateTotal();
+        }
+    });
+
     updateTotal();
 });
 </script>
 @endpush
+
+

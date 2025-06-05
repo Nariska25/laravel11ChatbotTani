@@ -13,6 +13,7 @@ return new class extends Migration
             $table->unsignedBigInteger('carts_id');
             $table->unsignedBigInteger('products_id');
             $table->integer('amount'); // Jumlah produk
+            $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('subtotal', 10, 2);
             $table->timestamps();
 

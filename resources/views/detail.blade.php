@@ -30,7 +30,7 @@
                         </span>
                     </div>
                     
-                    <h2 class="text-primary fw-bold mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</h2>
+                    <h2 class="text-primary fw-bold mb-4">Rp {{ number_format($product->discounted_price, 0, ',', '.') }}</h2>
                     
                     <div class="mb-4">
                         <h5 class="fw-bold">Deskripsi Produk:</h5>

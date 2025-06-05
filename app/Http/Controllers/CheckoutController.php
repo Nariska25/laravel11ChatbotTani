@@ -38,12 +38,17 @@ class CheckoutController extends Controller
         $subtotal = $cartItems->sum('subtotal');
 
         $shippingMethods = ShippingMethod::where('is_active', true)->get();
+        $vouchers = Voucher::where('start_date', '<=', now())
+        ->where('end_date', '>=', now())
+        ->where('quantity', '>', 0)
+        ->get();
 
         return view('checkout', compact(
             'user',
             'cartItems',
             'subtotal',
-            'shippingMethods'
+            'shippingMethods',
+            'vouchers',
         ));
     }
 

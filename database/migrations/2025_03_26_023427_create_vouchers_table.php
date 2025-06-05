@@ -8,9 +8,8 @@ return new class extends Migration {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id('vouchers_id'); // Auto-increment & Primary Key
             $table->string('promotion_code', 30)->unique(); 
-            $table->date('start_date'); 
-            $table->date('end_date'); 
-            $table->time('start_time'); 
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');    
             $table->integer('quantity'); 
             $table->string('promotion_item', 250)->nullable(); 
             $table->decimal('discount', 10, 2); 

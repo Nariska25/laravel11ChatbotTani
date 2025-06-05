@@ -12,7 +12,9 @@
                         <form action="{{ route('profile.updateAlamat', ['redirect' => request()->query('redirect')]) }}" method="POST">
                             @csrf
                             @method('PUT')
-
+                            @if(request()->has('redirect'))
+                            <input type="hidden" name="redirect" value="{{ request()->query('redirect') }}">
+                            @endif
                             <div class="mb-3">
                                 <label for="address" class="form-label">Alamat</label>
                                 <input type="text" class="form-control" id="address" name="address" value="{{ old('address', $user->address) }}" required>
@@ -37,11 +39,16 @@
                                 <label for="phone" class="form-label">No. Telepon</label>
                                 <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone', $user->phone) }}" required>
                             </div>
-
-                            <div class="d-flex justify-content-end">
+                            <form action="{{ route('profile.updateAlamat') }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                            
+                                <!-- input alamat, kota, dsb -->
+                            
+                                <input type="hidden" name="redirect" value="{{ request()->query('redirect', route('profile.alamat')) }}">
+                            
                                 <button type="submit" class="btn btn-success">Simpan Perubahan</button>
-                                <a href="{{ route('profile.alamat') }}" class="btn btn-secondary ms-2">Batal</a>
-                            </div>
+                            </form>
                         </form>                        
                     </div>
                 </div>

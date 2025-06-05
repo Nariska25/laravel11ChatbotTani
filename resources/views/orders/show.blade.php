@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <div class="text-end">
-                                <div class="fw-medium">Rp {{ number_format($item->product->price, 0, ',', '.') }}</div>
+                                <div class="fw-medium">Rp {{ number_format($item->product->discounted_price, 0, ',', '.') }}</div>
                                 <small class="text-muted">Rp {{ number_format($item->subtotal, 0, ',', '.') }} total</small>
                             </div>
                         </div>
@@ -126,12 +126,15 @@
                     </div>
 
                     {{-- Tombol Bayar --}}
+                    @if($order->order_status === 'Belum Bayar')
                     <form action="{{ route('orders.pay', $order->order_id) }}" method="POST" class="mt-2">
                         @csrf
                         <button type="submit" class="btn btn-warning w-100 py-2 rounded-pill">
                             <i class="fas fa-credit-card me-2"></i>Bayar Sekarang
                         </button>
                     </form>
+                    @endif
+
 
                     {{-- Tombol Batal --}}
                     @if($order->order_status === 'Belum Bayar')
@@ -156,7 +159,7 @@
             </div>
 
             {{-- TRACK ORDER --}}
-            @if(in_array($order->order_status, ['Dikirim', 'Selesai']))
+            @if(in_array($order->order_status, ['Dikirim']))
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-header bg-white border-bottom py-3">
                         <h3 class="h6 mb-0">Track Your Order</h3>

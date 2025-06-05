@@ -32,8 +32,7 @@ class VoucherController extends Controller
         $request->validate([
             'promotion_code'   => 'required|string|unique:vouchers',
             'start_date'       => 'required|date',
-            'end_date'         => ['required', 'date', 'after:start_date'],
-            'start_time'       => 'required|date_format:H:i',
+            'end_date'         => 'required|date|after:start_date',
             'quantity'         => 'required|integer',
             'promotion_item'   => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'discount'         => 'required|numeric',
@@ -44,15 +43,14 @@ class VoucherController extends Controller
             $imagePath = $request->file('promotion_item')->store('promotion_items', 'public');
         }
 
-        // Format tanggal agar end_date berada di akhir hari
-        $startDate = Carbon::parse($request->start_date)->startOfDay();
-        $endDate   = Carbon::parse($request->end_date)->endOfDay();
+        // Simpan tanggal dan waktu persis dari input form
+        $startDate = Carbon::parse($request->start_date);
+        $endDate   = Carbon::parse($request->end_date);
 
         $voucher = Voucher::create([
             'promotion_code'   => $request->promotion_code,
             'start_date'       => $startDate,
             'end_date'         => $endDate,
-            'start_time'       => $request->start_time,
             'quantity'         => $request->quantity,
             'promotion_item'   => $imagePath,
             'discount'         => $request->discount,
@@ -61,6 +59,7 @@ class VoucherController extends Controller
 
         return redirect()->route('admin.voucher.index')->with('success', 'Voucher created successfully.');
     }
+
 
     public function destroy(Voucher $voucher)
     {

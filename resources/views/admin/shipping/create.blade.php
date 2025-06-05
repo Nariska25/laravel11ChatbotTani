@@ -62,8 +62,7 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ route('admin.shipping.index') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Simpan</button>
             </form>
         </div>
     </div>

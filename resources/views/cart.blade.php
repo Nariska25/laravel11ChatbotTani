@@ -53,7 +53,7 @@
                                         <div class="col-auto d-flex align-items-center">
                                             <input type="checkbox" class="product-checkbox me-3" 
                                                 data-id="{{ $item->carts_detail_id }}" 
-                                                data-price="{{ $item->product->price }}" 
+                                                data-price="{{ $item->product->discounted_price }}"
                                                 data-amount="{{ $item->amount }}">
                                             <img src="{{ asset('storage/' . $item->product->products_image) }}" 
                                                  alt="{{ $item->product->products_name }}" 
@@ -77,7 +77,21 @@
                                             
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div>
-                                                    <p class="fw-bold mb-0 text-success">Rp {{ number_format($item->product->price, 0, ',', '.') }}</p>
+                                                   @if ($item->product->hasDiscount())
+                                                            <p class="mb-0">
+                                                                <span class="text-muted text-decoration-line-through">
+                                                                    Rp {{ number_format($item->product->price, 0, ',', '.') }}
+                                                                </span>
+                                                                <br>
+                                                                <span class="fw-bold text-success">
+                                                                    Rp {{ number_format($item->product->discounted_price, 0, ',', '.') }}
+                                                                </span>
+                                                            </p>
+                                                        @else
+                                                            <p class="fw-bold mb-0 text-success">
+                                                                Rp {{ number_format($item->product->discounted_price, 0, ',', '.') }}
+                                                            </p>
+                                                        @endif
                                                 </div>
                                                 <div class="d-flex align-items-center">
                                                     <button class="btn btn-outline-secondary btn-sm btn-minus" 
@@ -89,7 +103,7 @@
                                                            value="{{ $item->amount }}" 
                                                            style="width: 60px;"
                                                            data-id="{{ $item->carts_detail_id }}"
-                                                           data-price="{{ $item->product->price }}"
+                                                          data-price="{{ $item->product->discounted_price }}"
                                                            data-max="{{ $item->product->stock }}">
                                                     <button class="btn btn-outline-secondary btn-sm btn-plus" 
                                                             data-id="{{ $item->carts_detail_id }}" type="button">
@@ -159,30 +173,50 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Inisialisasi Toast
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
 
+    // Fungsi update ringkasan belanja
     function updateSummary() {
-        let subtotal = 0;
-        $('.product-checkbox:checked').each(function() {
-            const price = parseFloat($(this).data('price'));
-            const amount = parseInt($(this).data('amount'));
-            subtotal += price * amount;
-        });
-        
-        const discount = {{ $cart->discount ?? 0 }};
-        const total = subtotal - discount;
-        
-        $('#subtotal').text('Rp ' + subtotal.toLocaleString('id-ID'));
-        $('#total').text('Rp ' + total.toLocaleString('id-ID'));
-    }
+    let subtotal = 0;
+    let itemCount = 0;
+
+    $('.product-checkbox:checked').each(function() {
+        const price = parseFloat($(this).data('price'));
+        const amount = parseInt($(this).data('amount'));
+        subtotal += price * amount;
+        itemCount += amount;
+    });
+
+    const discount = {{ $cart->discount ?? 0 }};
+    const total = subtotal - discount;
+
+    $('#subtotal').text('Rp ' + subtotal.toLocaleString('id-ID'));
+    $('#total').text('Rp ' + total.toLocaleString('id-ID'));
+    $('.badge.rounded-pill').text(itemCount + ' item');
+}
+
+    // Event untuk checkbox produk
+    $(document).on('change', '.product-checkbox', function() {
+        updateSummary();
+    });
 
     // Event untuk tombol plus dan minus
     $(document).on('click', '.btn-minus, .btn-plus', function(e) {
         e.preventDefault();
         const input = $(this).siblings('.amount-input');
-        let currentVal = parseInt(input.val()) || 1;
+        let currentVal = parseInt(input.val());
         const maxStock = parseInt(input.data('max'));
-        const productId = input.data('id');
-        const price = parseFloat(input.data('price'));
 
         if ($(this).hasClass('btn-plus')) {
             if (currentVal < maxStock) {
@@ -203,16 +237,17 @@ $(document).ready(function() {
             }
         }
 
+        
         input.trigger('change');
     });
 
+    // Event untuk form checkout
     $('#checkoutForm').on('submit', function(e) {
-        // Ambil semua checkbox yang dicentang
         let selectedIds = [];
         $('.product-checkbox:checked').each(function() {
             selectedIds.push($(this).data('id'));
         });
-        // Jika tidak ada produk yang dipilih, batalkan submit dan beri alert
+
         if (selectedIds.length === 0) {
             e.preventDefault();
             Swal.fire({
@@ -222,7 +257,7 @@ $(document).ready(function() {
             });
             return false;
         }
-        // Set value input hidden dengan string list id
+
         $('#selectedProductsInput').val(selectedIds.join(','));
     });
 
@@ -234,6 +269,7 @@ $(document).ready(function() {
         const maxStock = parseInt(input.data('max'));
         const price = parseFloat(input.data('price'));
 
+        // Validasi input
         if (newQuantity > maxStock) {
             Swal.fire({
                 icon: 'warning',
@@ -247,72 +283,65 @@ $(document).ready(function() {
             input.val(1);
         }
 
+        // Update tampilan sementara
         const newTotal = price * newQuantity;
         $('#totalPrice' + itemId).text('Rp ' + newTotal.toLocaleString('id-ID'));
+        $('.product-checkbox[data-id="' + itemId + '"]').data('amount', newQuantity);
 
-        // Update data-amount di checkbox terkait
-        const checkbox = input.closest('.list-group-item').find('.product-checkbox');
-        if (checkbox.length) {
-            checkbox.data('amount', newQuantity);
-            checkbox.attr('data-amount', newQuantity);
-        }
-
+        // Kirim request ke server
         $.ajax({
-            url: "{{ url('cart/update') }}/" + itemId,
+            url: "{{ route('cart.update', '') }}/" + itemId,
             method: 'PATCH',
             data: {
                 amount: newQuantity,
                 _token: "{{ csrf_token() }}"
             },
+            beforeSend: function() {
+                input.prop('disabled', true);
+                $('#totalPrice' + itemId).html('<i class="fas fa-spinner fa-spin"></i>');
+            },
             success: function(response) {
+                // Update tampilan dengan data dari server
                 $('#totalPrice' + itemId).text('Rp ' + response.subtotal.toLocaleString('id-ID'));
-                if (response.cart_count) {
-                    $('.cart-count').text(response.cart_count);
-                    $('.badge.rounded-pill').text(response.cart_count + ' item');
-                }
+                $('.badge.rounded-pill').text(response.cart_count + ' item');
+                $('#subtotal').text('Rp ' + response.cart_total.toLocaleString('id-ID'));
+                $('#total').text('Rp ' + response.cart_total.toLocaleString('id-ID'));
                 
-                // Update ringkasan belanja
-                updateSummary();
-
+                // Pastikan input menampilkan jumlah yang benar-benar tersimpan
+                input.val(response.new_amount);
+                
+                // Update checkbox
+                $('.product-checkbox[data-id="' + itemId + '"]').data('amount', response.new_amount);
+                
                 Toast.fire({
                     icon: 'success',
-                    title: response.message || 'Jumlah berhasil diupdate'
+                    title: response.message
                 });
+                
+                updateSummary();
             },
             error: function(xhr) {
+                let errorMessage = 'Terjadi kesalahan saat menyimpan perubahan';
                 if (xhr.status === 400) {
-                    const response = xhr.responseJSON;
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: response.message || 'Terjadi kesalahan',
-                    });
-                    input.val(response.max_stock || 1);
-                    $('#totalPrice' + itemId).text('Rp ' + (price * (response.max_stock || 1)).toLocaleString('id-ID'));
+                    errorMessage = xhr.responseJSON.message;
+                    input.val(xhr.responseJSON.max_stock || 1);
+                    $('#totalPrice' + itemId).text('Rp ' + (price * (xhr.responseJSON.max_stock || 1)).toLocaleString('id-ID'));
                 }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: errorMessage,
+                });
+            },
+            complete: function() {
+                input.prop('disabled', false);
             }
         });
     });
 
-    // Event saat checkbox dicentang atau tidak
-    $(document).on('change', '.product-checkbox', function() {
-        updateSummary();
-    });
-
     // Inisialisasi ringkasan saat halaman load
     updateSummary();
-
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-        }
-    });
 });
 </script>
 @endpush

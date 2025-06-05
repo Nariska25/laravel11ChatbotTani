@@ -4,6 +4,7 @@
 
 @section('content')
 <div class="container py-5">
+    
     <!-- Modal Search Start -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -318,5 +319,18 @@
 .pagination .page-item.disabled .page-link {
     color: #ccc;
 }
+.carousel-item img {
+    transition: transform 0.5s ease;
+}
+
+.carousel-item:hover img {
+    transform: scale(1.02);
+}
+
+.carousel-caption {
+    bottom: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
     </style>
 @endsection

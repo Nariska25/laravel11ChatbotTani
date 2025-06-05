@@ -15,7 +15,7 @@ class Cart extends Model
     protected $keyType = 'int';
 
     // Hapus products_id karena sudah tidak ada di tabel carts
-    protected $fillable = ['user_id', 'discount', 'total'];
+    protected $fillable = ['user_id', 'total'];
 
     // Relasi ke user
     public function user()
@@ -32,6 +32,14 @@ class Cart extends Model
     // Accessor opsional: menghitung total dari semua subtotal detail
     public function getTotalAttribute()
     {
-        return $this->details->sum('subtotal') - $this->discount;
+        return $this->details->sum('subtotal');
     }
+
+    public function updateTotal()
+{
+    $subtotal = $this->cartDetails()->sum('subtotal');
+    $this->subtotal = $subtotal;
+    $this->total = $subtotal - $this->discount;
+    $this->save();
+}
 }

@@ -14,18 +14,13 @@
 
         <div class="mb-3">
             <label for="start_date" class="form-label">Start Date</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ old('start_date') }}" required>
+            <input type="datetime-local" class="form-control" id="start_date" name="start_date" value="{{ old('start_date') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="end_date" class="form-label">End Date</label>
-            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ old('end_date') }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="start_time">Start Time</label>
-            <input type="time" name="start_time" id="start_time" class="form-control" required>
-        </div>        
+            <input type="datetime-local" class="form-control" id="end_date" name="end_date" value="{{ old('end_date') }}" required>
+        </div>     
 
         <div class="mb-3">
             <label for="quantity" class="form-label">Quantity</label>
@@ -39,6 +34,13 @@
         <div class="mb-3">
             <label for="discount" class="form-label">Discount</label>
             <input type="number" class="form-control" id="discount" name="discount" value="{{ old('discount') }}" min="0" max="100000000" required>
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status" name="status" required>
+                <option value="1" {{ old('status') == '1' ? 'selected' : '' }}>Aktif</option>
+                <option value="0" {{ old('status') == '0' ? 'selected' : '' }}>Nonaktif</option>
+            </select>
         </div>
 
         <button type="submit" class="btn btn-primary">Create Voucher</button>
@@ -59,17 +61,12 @@
     document.getElementById('start_date').addEventListener('change', function () {
         const startDate = new Date(this.value);
         if (!isNaN(startDate.getTime())) {
-            // Tambahkan 1 hari
+            // Tambah 1 hari penuh
             startDate.setDate(startDate.getDate() + 1);
-            const year = startDate.getFullYear();
-            const month = ('0' + (startDate.getMonth() + 1)).slice(-2);
-            const day = ('0' + startDate.getDate()).slice(-2);
-
-            // Set min di end_date
-            document.getElementById('end_date').setAttribute('min', `${year}-${month}-${day}`);
+            const iso = startDate.toISOString().slice(0, 16); // Format datetime-local
+            document.getElementById('end_date').setAttribute('min', iso);
         }
     });
-</script>
 </script>
 
 @endsection

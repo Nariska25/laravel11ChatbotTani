@@ -18,7 +18,7 @@
           <img src="{{ asset("assets/img/hero-$slide.jpg") }}" class="d-block mx-auto hero-img" style="width: 100%; height: 100vh; object-fit: cover;" alt="Hero Image {{ $slide }}" loading="lazy">
           <div class="carousel-caption container position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-center px-4 px-md-5">
             <div class="hero-content text-white d-flex flex-column align-items-center gap-4" style="max-width: 800px;">
-              <h2 class="hero-title display-3 fw-bold">
+              <h2 class="hero-title text-white display-3 fw-bold">
                 @if($slide === 1) Ketahanan Pangan Dunia
                 @elseif($slide === 2) Sayuran Organik Tanpa Pestisida
                 @elseif($slide === 3) Hasil Panen Segar Setiap Hari
@@ -32,9 +32,6 @@
                 @elseif($slide === 4) Pertanian modern untuk generasi mendatang.
                 @else Dukung pertanian lokal untuk kehidupan sehat. @endif
               </p>
-              <a href="{{ route('shop.index') }}" class="btn btn-warning btn-lg px-4 py-3 rounded-1 fw-bold text-white shadow">
-                <i class="fas fa-shopping-basket me-2"></i> Explore Produk
-              </a>
             </div>
           </div>
         </div>

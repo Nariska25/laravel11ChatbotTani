@@ -36,22 +36,15 @@
         <!-- Password -->
         <div>
             <x-input-label for="password" value="Password" />
-            <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" required placeholder="Minimal 8 karakter" />
+            <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" required placeholder="Minimal 6 karakter" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Konfirmasi Password -->
-        <div>
-            <x-input-label for="password_confirmation" value="Konfirmasi Password" />
-            <x-text-input id="password_confirmation" class="block mt-1 w-full pr-10" type="password" name="password_confirmation" required placeholder="Ulangi password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
         <!-- Syarat & Ketentuan -->
         <div class="flex items-center">
-            <input id="terms" type="checkbox" name="terms" required class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-            <label for="terms" class="ml-2 block text-sm text-gray-900">
-                Saya setuju dengan <a href="#" class="text-blue-600 hover:underline">syarat dan ketentuan</a>
+            <input id="terms" type="checkbox" name="terms" required class="h-4 w-4 text-blue border-blue rounded focus:ring-blue-500">
+            <label for="terms" class="ml-2 block text-sm text-white">
+                Saya setuju dengan <a href="#" class="text-blue-300 hover:underline">syarat dan ketentuan</a>
             </label>        
         </div>
 

@@ -36,15 +36,15 @@ class Products extends Model
         return $this->hasMany(OrderDetail::class, 'products_id', 'products_id');
     }
 
-    public function carts()
+    public function cartDetails()
     {
-        return $this->hasMany(Cart::class, 'products_id', 'products_id');
+         return $this->hasMany(CartDetail::class, 'products_id', 'products_id');
     }
 
-        public function hasDiscount()
-        {
-            return $this->original_price > $this->price; // Mengecek apakah ada selisih harga
-        }
+     public function hasDiscount()
+    {
+         return $this->original_price > $this->price; // Mengecek apakah ada selisih harga
+    }
 
     public function sale()
     {
@@ -62,10 +62,10 @@ class Products extends Model
     
         public function getDiscountedPriceAttribute()
         {
-            $sale = $this->activeSale;
-            if ($sale) {
-                return max(0, $this->price - $sale->discount_value);
+            if ($this->activeSale && $this->activeSale->discount_value > 0) {
+                return max($this->price - $this->activeSale->discount_value, 0);
             }
             return $this->price;
         }
+
 }

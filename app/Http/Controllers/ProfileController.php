@@ -29,18 +29,17 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'phone'       => 'nullable|string|max:15',
-            'gender'      => 'required|string',
-            'dob'         => 'nullable|date',
-            'image_path'  => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'phone' => 'nullable|string',
+            'gender' => 'nullable|in:male,female',
+            'image_path' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // maksimal 2048 KB = 2 MB
         ]);
 
         $data = [
             'name'   => $request->name,
             'phone'  => $request->phone,
             'gender' => $request->gender,
-            'dob'    => $request->dob,
         ];
 
         if ($request->hasFile('image_path')) {
@@ -76,7 +75,7 @@ class ProfileController extends Controller
     public function updateAlamat(Request $request)
     {
         $user = Auth::user();
-
+    
         $request->validate([
             'address'     => 'required|string',
             'city'        => 'required|string',
@@ -84,7 +83,7 @@ class ProfileController extends Controller
             'postal_code' => 'required|string',
             'phone'       => 'required|string',
         ]);
-
+    
         $user->update([
             'address'     => $request->address,
             'city'        => $request->city,
@@ -92,11 +91,25 @@ class ProfileController extends Controller
             'postal_code' => $request->postal_code,
             'phone'       => $request->phone,
         ]);
-
-        $redirectUrl = session()->pull('redirect_after_update', route('checkout.index'));
-
+    
+        // Ambil redirect dari input form
+        $redirect = $request->input('redirect');
+    
+        // Cek apakah redirect adalah route name atau URL
+        // Kalau redirect dimulai dengan http atau / maka anggap URL
+        if ($redirect) {
+            if (filter_var($redirect, FILTER_VALIDATE_URL) || str_starts_with($redirect, '/')) {
+                $redirectUrl = $redirect;
+            } else {
+                $redirectUrl = route($redirect);
+            }
+        } else {
+            $redirectUrl = route('profile.alamat');
+        }
+    
         return redirect($redirectUrl)->with('success', 'Alamat berhasil diperbarui.');
     }
+    
 
     public function password()
     {

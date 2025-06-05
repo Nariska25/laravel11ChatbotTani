@@ -37,14 +37,14 @@
                 }
 
                 $bgClass = match($status) {
-                    'dibatalkan' => 'bg-danger bg-opacity-10',
-                    'selesai' => 'bg-primary bg-opacity-10',
-                    'dikirim' => 'bg-info bg-opacity-10',
-                    'sedang dikemas' => 'bg-warning bg-opacity-10',
-                    'telah dibayar' => 'bg-success bg-opacity-10',
-                    'belum bayar' => 'bg-secondary bg-opacity-10',
-                    'expired' => 'bg-dark bg-opacity-10',
-                    default => 'bg-light',
+                    'dibatalkan' => 'bg-danger bg-opacity-10 text-white',
+                    'selesai' => 'bg-success bg-opacity-10 text-white',
+                    'dikirim' => 'bg-primary bg-opacity-10 text-white',
+                    'sedang dikemas' => 'bg-primary bg-opacity-10 text-white',
+                    'telah dibayar' => 'bg-info bg-opacity-10 text-white',
+                    'belum bayar' => 'bg-secondary bg-opacity-10 text-white',
+                    'expired' => 'bg-dark bg-opacity-10 text-white',
+                    default => 'bg-light text-dark',
                 };
             @endphp
             <div class="col-md-6 col-lg-4">

@@ -23,7 +23,6 @@
                         <th>Produk</th>
                         <th>Harga Asli</th>
                         <th>Harga Diskon</th>
-                        <th>Jenis Diskon</th>
                         <th>Nilai Diskon</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Berakhir</th>

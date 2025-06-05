@@ -17,8 +17,8 @@ class Voucher extends Model
     protected $keyType = 'int';  // Jika tipe datanya integer
 
     protected $fillable = [
-        'promotion_code', 'start_date', 'end_date', 'start_time', 
-        'quantity', 'promotion_type', 'promotion_item', 'discount', 
+        'promotion_code', 'start_date', 'end_date','quantity', 
+        'promotion_type', 'promotion_item', 'discount', 'status',
     ];
 
     public function isValid()

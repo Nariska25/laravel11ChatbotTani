@@ -18,7 +18,7 @@ class CartController extends Controller
         session()->put('cart_count', $cartCount);
 
         $subtotal = $this->calculateSubtotal($cartItems);
-        $totalPrice = $subtotal - ($cart->discount ?? 0);
+        $totalPrice = $subtotal;
 
         return view('cart', compact('cart', 'cartItems', 'subtotal', 'totalPrice'));
     }
@@ -30,7 +30,7 @@ class CartController extends Controller
             'amount' => 'required|integer|min:1',
         ]);
 
-        $product = Products::findOrFail($request->products_id);
+        $product = Products::with('activeSale')->findOrFail($request->products_id);
 
         if ($request->amount > $product->stock) {
             return back()->with('error', 'Jumlah produk melebihi stok yang tersedia.');
@@ -38,22 +38,33 @@ class CartController extends Controller
 
         $cart = Cart::firstOrCreate(
             ['user_id' => Auth::id()],
-            ['discount' => 0, 'total' => 0]
+            ['total' => 0]
         );
 
-        $cartDetail = $cart->cartDetails()->where('products_id', $request->products_id)->first();
+        $cartDetail = $cart->cartDetails()->where('products_id', $product->products_id)->first();
 
+        $discount = $product->activeSale->discount_value ?? 0;
+        $unitPrice = $product->discounted_price;
+        
         if ($cartDetail) {
-            $cartDetail->amount += $request->amount;
+            $totalAmount = $cartDetail->amount + $request->amount;
+
+            if ($totalAmount > $product->stock) {
+                return back()->with('error', 'Jumlah total melebihi stok yang tersedia.');
+            }
+
+            $cartDetail->amount = $totalAmount;
+            $cartDetail->discount = $discount;
+            $cartDetail->subtotal = $unitPrice * $totalAmount;
         } else {
             $cartDetail = new CartDetail([
-                'products_id' => $request->products_id,
+                'products_id' => $product->products_id,
                 'amount' => $request->amount,
+                'discount' => $discount,
+                'subtotal' => $unitPrice * $request->amount,
             ]);
+            $cart->cartDetails()->save($cartDetail);
         }
-
-        $cartDetail->subtotal = $product->price * $cartDetail->amount;
-        $cart->cartDetails()->save($cartDetail);
 
         $this->updateCartTotal($cart);
         $this->updateCartCount();
@@ -61,50 +72,50 @@ class CartController extends Controller
         return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'amount' => 'required|integer|min:1',
-        ]);
+public function update(Request $request, $id)
+{
+    $cartDetail = CartDetail::find($id);
 
-        $cartDetail = CartDetail::where('carts_detail_id', $id)
-                      ->whereHas('cart', function($query) {
-                          $query->where('user_id', Auth::id());
-                      })->firstOrFail();
-
-        $product = $cartDetail->product;
-
-        if ($request->amount > $product->stock) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Jumlah melebihi stok yang tersedia',
-                'max_stock' => $product->stock
-            ], 400);
-        }
-
-        $cartDetail->amount = $request->amount;
-        $cartDetail->subtotal = $product->price * $cartDetail->amount;
-        $cartDetail->save();
-
-        $cart = $cartDetail->cart;
-        $this->updateCartTotal($cart);
-        $this->updateCartCount();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Keranjang berhasil diperbarui',
-            'subtotal' => number_format($cartDetail->subtotal, 0, ',', '.'),
-            'total' => number_format($cart->total, 0, ',', '.'),
-            'cart_count' => $this->getCartCount()
-        ]);
+    if (!$cartDetail) {
+        return response()->json(['message' => 'Data tidak ditemukan'], 404);
     }
+
+    $amount = intval($request->amount);
+
+    if ($amount < 1) {
+        return response()->json(['message' => 'Jumlah harus minimal 1'], 400);
+    }
+
+    if ($amount > $cartDetail->product->stock) {
+        return response()->json([
+            'message' => 'Stok tidak mencukupi',
+            'max_stock' => $cartDetail->product->stock
+        ], 400);
+    }
+
+    $cartDetail->amount = $amount;
+    $cartDetail->subtotal = $amount * $cartDetail->product->discounted_price;
+    $cartDetail->save();
+
+    $cart = $cartDetail->cart;
+    $this->updateCartTotal($cart); // update total harga di carts
+    $this->updateCartCount();      // update session cart count
+
+    return response()->json([
+        'message' => 'Jumlah berhasil diupdate',
+        'subtotal' => $cartDetail->subtotal,
+        'cart_count' => $this->getCartCount()
+    ]);
+}
+
+
 
     public function remove($cartDetailId)
     {
         $cartDetail = CartDetail::where('carts_detail_id', $cartDetailId)
-                      ->whereHas('cart', function($query) {
-                          $query->where('user_id', Auth::id());
-                      })->firstOrFail();
+            ->whereHas('cart', function ($query) {
+                $query->where('user_id', Auth::id());
+            })->firstOrFail();
 
         $cart = $cartDetail->cart;
         $cartDetail->delete();
@@ -130,14 +141,13 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong.');
         }
 
-        // Validasi stok produk
         foreach ($cart->cartDetails as $item) {
             if (!$item->product) {
                 return redirect()->route('cart.index')->with('error', 'Produk tidak ditemukan.');
             }
 
             if ($item->amount > $item->product->stock) {
-                return redirect()->route('cart.index')->with('error', 
+                return redirect()->route('cart.index')->with('error',
                     'Stok produk ' . $item->product->products_name . ' tidak mencukupi. Stok tersedia: ' . $item->product->stock);
             }
         }
@@ -158,7 +168,7 @@ class CartController extends Controller
 
     private function updateCartTotal(Cart $cart)
     {
-        $total = $cart->cartDetails()->sum('subtotal');
+        $total = $cart->cartDetails->sum('subtotal'); // Sudah pakai eager loaded
         $cart->update(['total' => $total]);
     }
 
